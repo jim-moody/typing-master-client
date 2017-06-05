@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import { Redirect } from 'react-router-dom'
 import { index, destroy } from '../utils/exercise-api'
-
 // Material UI
 import Paper from 'material-ui/Paper'
 import IconMenu from 'material-ui/IconMenu'
@@ -68,10 +66,6 @@ class ExerciseListContainer extends Component {
         let exercisesCopy = this.state.exercises.slice()
         const i = exercisesCopy.findIndex(e => e.id === id)
         exercisesCopy.splice(i, 1)
-        exercisesCopy = exercisesCopy.map((exercise, index) =>{
-          exercise.name = 'Exercise ' + (index + 1)
-          return exercise
-        })
         this.setState({
           exercises: exercisesCopy
         })
@@ -107,8 +101,7 @@ class ExerciseListContainer extends Component {
         ? <Redirect push to={path} />
       : <div>
       <div className="list-header">
-        <h3>Exercises
-        </h3>
+        <h2>Exercises</h2>
         <FloatingActionButton onTouchTap={this.onAdd} mini >
           <ContentAdd />
         </FloatingActionButton>
@@ -120,7 +113,5 @@ class ExerciseListContainer extends Component {
     )
   }
 }
-// anchorOrigin={{horizontal: 'left', vertical: 'top'}}
-// targetOrigin={{horizontal: 'left', vertical: 'top'}} >
 
 export default ExerciseListContainer

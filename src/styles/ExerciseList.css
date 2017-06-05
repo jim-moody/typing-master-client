@@ -1,0 +1,26 @@
+.paper-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0;
+
+}
+
+.paper-list-main {
+  flex: 1;
+  padding: 20px;
+  cursor: pointer;
+}
+.paper-list-main:hover {
+  background-color: rgba(228, 228, 228, 0.32);
+}
+
+.list-header{
+  display: flex;
+  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.list-header :first-child{
+  flex: 1
+}

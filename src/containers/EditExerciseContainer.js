@@ -2,7 +2,8 @@ import React, {Component} from 'react'
 import { Redirect } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import {show, update} from '../utils/exercise-api'
-import EditExercise from '../components/EditExercise'
+import UpdateExercise from '../components/UpdateExercise'
+import Validator from '../modules/Validator'
 import '../styles/NewExercise.css'
 
 class EditExerciseContainer extends Component {
@@ -11,23 +12,46 @@ class EditExerciseContainer extends Component {
 
     this.state = {
       exercise: {
+        name: '',
         text: ''
       },
+      errors: {},
       redirect: false
     }
   }
   componentDidMount () {
     show(this.props.match.params.id)
       .then(res => {
-        this.setState({exercise: {text: res.exercise.text}})
+        const {name, text} = res.exercise
+        const exercise = {
+          name,
+          text
+        }
+        this.setState({exercise})
       })
       .catch(console.error)
   }
-  onChange = (e) => {
-    this.setState({exercise: {text: e.target.value}})
+  onChangeExercise = (event) => {
+    const field = event.target.name
+    const newValue = event.target.value
+
+    this.setState(prevState => {
+      const { exercise } = prevState
+      exercise[field] = newValue
+
+      return {
+        exercise
+      }
+    })
   }
   onSubmit = (e) => {
     e.preventDefault()
+    let validator = new Validator(this.state.exercise, this.state.errors)
+    let errors = validator.formErrors
+    this.setState({ errors })
+    if (validator.errorExists) {
+      return
+    }
     const { id } = this.props.match.params
     update(id, this.state.exercise)
       .then(() => {
@@ -44,10 +68,13 @@ class EditExerciseContainer extends Component {
       <div>
         {redirect
           ? <Redirect to="/exercises"/>
-        : <EditExercise
-            onChange={this.onChange}
+        : <UpdateExercise
+            onChange={this.onChangeExercise}
             onSubmit={this.onSubmit}
-            value={this.state.exercise.text} />
+            exercise={this.state.exercise}
+            errors={this.state.errors}
+            title='Edit Exercise'
+            />
 }
       </div>
     )

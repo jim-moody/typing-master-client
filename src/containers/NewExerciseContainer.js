@@ -1,28 +1,49 @@
 import React, {Component} from 'react'
 import { Redirect } from 'react-router-dom'
-// import Paper from 'material-ui/Paper'
-// import TextField from 'material-ui/TextField'
-// import RaisedButton from 'material-ui/RaisedButton'
+import PropTypes from 'prop-types'
+
 import {createExercise} from '../utils/exercise-api'
-import EditExercise from '../components/EditExercise'
+import UpdateExercise from '../components/UpdateExercise'
+import Validator from '../modules/Validator'
 import '../styles/NewExercise.css'
 
-class NewExerciseContainer extends Component {
-  constructor () {
-    super()
+class EditExerciseContainer extends Component {
+  constructor (props) {
+    super(props)
 
     this.state = {
-      text: '',
-      redirect: false,
-      path: ''
+      exercise: {
+        name: '',
+        text: ''
+      },
+      errors: {},
+      redirect: false
     }
   }
-  onChange = (e) => {
-    this.setState({text: e.target.value})
+
+  onChangeExercise = (event) => {
+    const field = event.target.name
+    const newValue = event.target.value
+
+    this.setState(prevState => {
+      const { exercise } = prevState
+      exercise[field] = newValue
+
+      return {
+        exercise
+      }
+    })
   }
   onSubmit = (e) => {
     e.preventDefault()
-    createExercise(this.state.text)
+    let validator = new Validator(this.state.exercise, this.state.errors)
+    let errors = validator.formErrors
+    this.setState({ errors })
+
+    if (validator.errorExists) {
+      return
+    }
+    createExercise(this.state.exercise)
       .then(() => {
         this.setState({
           path: '/exercises',
@@ -32,19 +53,26 @@ class NewExerciseContainer extends Component {
       .catch(console.error)
   }
   render () {
-    const {path, redirect} = this.state
+    const {redirect} = this.state
     return (
       <div>
         {redirect
-          ? <Redirect to={path}/>
-        : <EditExercise
-            onChange={this.onChange}
+          ? <Redirect to="/exercises"/>
+        : <UpdateExercise
+            onChange={this.onChangeExercise}
             onSubmit={this.onSubmit}
-            value={this.state.text} />
+            exercise={this.state.exercise}
+            errors={this.state.errors}
+            title='New Exercise'
+            />
 }
       </div>
     )
   }
 }
 
-export default NewExerciseContainer
+EditExerciseContainer.propTypes = {
+  match: PropTypes.object
+}
+
+export default EditExerciseContainer

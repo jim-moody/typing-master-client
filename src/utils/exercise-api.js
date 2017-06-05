@@ -3,7 +3,7 @@ import Auth from '../modules/Auth'
 
 const url = process.env.REACT_APP_API_URL
 
-const createExercise = (text) =>
+const createExercise = (exercise) =>
   $.ajax({
     url: url + '/exercises',
     method: 'POST',
@@ -11,9 +11,7 @@ const createExercise = (text) =>
       Authorization: 'Token token=' + Auth.getToken()
     },
     data: {
-      exercise: {
-        text
-      }
+      exercise
     }
   })
 

@@ -1,6 +1,10 @@
-.new-exercise {
-  max-width: 750px;
-  margin: 0 auto;
-  padding: 10px;
+.new-exercise:nth-child(1){
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  margin-left: 1em;
+}
+
+.new-exercise h2 {
+  width: 100%;
 }

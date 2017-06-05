@@ -1,0 +1,34 @@
+.highlight {
+  background-color: #d1e9ff;
+}
+
+@keyframes cursor {
+  from,
+  to {
+    border-color: transparent;
+  }
+
+  50% {
+    border-color: black;
+  }
+}
+
+.cursor {
+  animation: cursor .9s step-end infinite;
+  border-left: 1px solid black;
+}
+
+.typing-wrapper{
+  cursor: pointer;
+  text-align: initial;
+  font-size: 1.3em;
+  max-width: 750px;
+}
+pre {
+  white-space: pre-wrap;
+}
+.typing-wrapper:focus,
+pre:focus {
+  border: 0;
+  outline: none;
+}

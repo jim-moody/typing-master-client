@@ -1,0 +1,34 @@
+.auth-form {
+  max-width: 500px;
+  margin: 10% auto;
+  padding: 1em 0 2em 0;
+}
+
+.action-div  {
+  display: flex;
+  align-items: center;
+  width: 80%;
+  margin: 2em auto;
+  justify-content: space-between;
+}
+.form-input {
+  min-width: 80%;
+}
+.auth-button  {
+  min-width: 180px;
+}
+h2  {
+  width: 80%;
+  margin: 1em auto 0 auto;
+  text-align: left;
+}
+.error-message {
+  color: rgb(244, 67, 54);
+  min-height: 15px;
+  width: 80%;
+  margin: 15px auto;
+}
+
+.inline-loader {
+  margin-right: 40px;
+}

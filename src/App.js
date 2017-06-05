@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom'
 // Material UI
 import injectTapEventPlugin from 'react-tap-event-plugin'
-import {blue700} from 'material-ui/styles/colors'
+import {blue700, indigoA200} from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Snackbar from 'material-ui/Snackbar'
@@ -31,7 +31,8 @@ import EditExerciseContainer from './containers/EditExerciseContainer'
 // set the material Theme
 const muiTheme = getMuiTheme({
   palette: {
-    primary1Color: blue700
+    primary1Color: blue700,
+    accent1Color: indigoA200
   }
 })
 
@@ -122,7 +123,7 @@ class App extends Component {
             <PrivateRoute path="/exercises/new" component={NewExercise} />
               <PrivateRoute path="/exercises/edit/:id" component={EditExerciseContainer} />
             <PrivateRoute path="/exercises/:id" component={ExerciseContainer} />
-          </Switch>
+            </Switch>
           <PrivateRoute path="/change-password" component={ChangePasswordContainer} onPasswordChanged={this.onPasswordChanged} />
           <Route path="/sign-in" render={props => <SignInContainer onSignedIn={this.onSignedIn} {...props} /> }/>
           <Route path="/sign-up" render={props => <SignUpContainer onSignedIn={this.onSignedIn} {...props} /> } />

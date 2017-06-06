@@ -2,14 +2,10 @@ import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import { index, destroy } from '../utils/exercise-api'
 // Material UI
-import Paper from 'material-ui/Paper'
-import IconMenu from 'material-ui/IconMenu'
-import MenuItem from 'material-ui/MenuItem'
-import IconButton from 'material-ui/IconButton'
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert'
 import FloatingActionButton from 'material-ui/FloatingActionButton'
 import ContentAdd from 'material-ui/svg-icons/content/add'
 
+import ExerciseItem from '../components/ExerciseItem'
 import '../styles/ExerciseList.css'
 
 class ExerciseListContainer extends Component {
@@ -24,6 +20,7 @@ class ExerciseListContainer extends Component {
   componentDidMount () {
     index()
       .then(res => this.setState({exercises: res.exercises}))
+      // TODO handle this error
       .catch(console.error)
   }
   handleRequestChange = (event, index) => {
@@ -70,44 +67,36 @@ class ExerciseListContainer extends Component {
           exercises: exercisesCopy
         })
       })
+      // TODO handle this error
       .catch(console.error)
   }
   render () {
-    const itemStyle = {
-      margin: '20px auto',
-      maxWidth: '500px'
-    }
-
     const exercises = this.state.exercises.map((exercise, i) => {
       return (
-        <Paper key={i} style={itemStyle}>
-          <div className='paper-list-item'>
-            <div data-value={exercise.id} onClick={this.onExerciseClick} className='paper-list-main'>
-            {exercise.name}
-          </div>
-            <IconMenu value={exercise.id} onItemTouchTap={this.onItemTouchTap}
-          iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-        <MenuItem name='edit' value={exercise.id} primaryText="Edit" />
-        <MenuItem name='delete' value={exercise.id} primaryText="Delete" />
-        </IconMenu>
-          </div>
-        </Paper>
+        <ExerciseItem key={i}
+          onItemTouchTap={this.onItemTouchTap}
+          onExerciseClick={this.onExerciseClick}
+          name={exercise.name}
+          id={exercise.id}
+          onEdit={this.onEdit}
+          onDelete={this.onDelete}
+          scores={exercise.scores}
+          editable={exercise.editable} />
       )
     })
     const { path, redirect } = this.state
     return (
       <div>
-      { redirect
-        ? <Redirect push to={path} />
+      { redirect ? <Redirect push to={path} />
       : <div>
-      <div className="list-header">
-        <h2>Exercises</h2>
-        <FloatingActionButton onTouchTap={this.onAdd} mini >
-          <ContentAdd />
-        </FloatingActionButton>
-        </div>
+          <div className="list-header">
+            <h2>Exercises</h2>
+            <FloatingActionButton onTouchTap={this.onAdd} mini>
+              <ContentAdd />
+            </FloatingActionButton>
+          </div>
           {exercises}
-        </div>
+          </div>
     }
     </div>
     )

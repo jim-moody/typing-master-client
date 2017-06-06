@@ -19,18 +19,10 @@ class ExerciseContainer extends Component {
       .catch(console.error)
   }
   render () {
-    const style = {
-      // textAlign: 'center',
-      display: 'inline-block',
-      // padding: 0,
-      // margin: 0
-      marginTop: '50px'
-    }
+    const props = this.props
 
     return (
-      <Paper style={style}>
-        <TypingArea text={this.state.text} />
-      </Paper>
+        <TypingArea text={this.state.text} exerciseId={this.props.match.params.id} {...props} />
     )
   }
 }

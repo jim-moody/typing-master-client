@@ -1,5 +1,5 @@
+/* eslint react/prop-types: 0 */
 import React from 'react'
-import PropTypes from 'prop-types'
 import '../styles/AuthForm.css'
 
 // Material Components
@@ -49,13 +49,5 @@ const SignUp = ({onSubmit, onChange, user, errors, isLoading}) =>
           </div>
         </form>
       </Paper>
-
-SignUp.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-  isLoading: PropTypes.bool
-}
 
 export default SignUp

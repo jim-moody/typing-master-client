@@ -1,5 +1,6 @@
+/* eslint react/prop-types: 0 */
+
 import React from 'react'
-import PropTypes from 'prop-types'
 // Material UI
 import TextField from 'material-ui/TextField'
 import RaisedButton from 'material-ui/RaisedButton'
@@ -44,14 +45,5 @@ const ChangePassword = ({onSubmit, onChange, passwords, errors, isLoading}) =>
         </div>
   </form>
 </Paper>
-
-ChangePassword.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  passwords: PropTypes.object.isRequired,
-  errors: PropTypes.object,
-  isLoading: PropTypes.bool
-
-}
 
 export default ChangePassword

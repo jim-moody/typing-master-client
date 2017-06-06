@@ -1,5 +1,5 @@
+/* eslint react/prop-types: 0 */
 import React from 'react'
-import PropTypes from 'prop-types'
 import MenuItem from 'material-ui/MenuItem'
 import { Link } from 'react-router-dom'
 import Drawer from 'material-ui/Drawer'
@@ -56,13 +56,5 @@ const NavBar = ({loggedIn, signOut, open, toggleDrawer, isLoading}) =>
     </Drawer>
     {isLoading && <AppLoader /> }
     </div>
-
-NavBar.propTypes = {
-  loggedIn: PropTypes.bool.isRequired,
-  signOut: PropTypes.func.isRequired,
-  open: PropTypes.bool,
-  toggleDrawer: PropTypes.func.isRequired,
-  isLoading: PropTypes.bool
-}
 
 export default NavBar

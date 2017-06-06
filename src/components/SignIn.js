@@ -1,5 +1,5 @@
+/* eslint react/prop-types: 0 */
 import React from 'react'
-import PropTypes from 'prop-types'
 import {Link} from 'react-router-dom'
 import '../styles/AuthForm.css'
 
@@ -47,12 +47,4 @@ const SignIn = ({onSubmit, onChange, errors, user, isLoading, muiTheme}) =>
   </form>
 </Paper>
 
-SignIn.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-  onChange: PropTypes.func.isRequired,
-  errors: PropTypes.object.isRequired,
-  user: PropTypes.object.isRequired,
-  isLoading: PropTypes.bool.isRequired,
-  muiTheme: PropTypes.object
-}
 export default muiThemeable()(SignIn)

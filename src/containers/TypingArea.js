@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Character from './Character'
-import Divider from 'material-ui/Divider'
-import '../styles/TypingArea.css'
+import Paper from 'material-ui/Paper'
+import { create } from '../utils/score-api'
+import classNames from 'classnames'
+import { CSSTransitionGroup } from 'react-transition-group' // ES6
+import Scorecard from '../components/Scorecard'
+import Score from '../modules/Score'
 
-const preStyle = {
-  padding: 100,
-  margin: 0
-}
+import '../styles/TypingArea.css'
 
 class TypingArea extends Component {
   constructor (props) {
@@ -15,12 +16,15 @@ class TypingArea extends Component {
 
     const characters = this.formatCharacters(props.text)
     this.state = {
+      score: {
+        mistakes: 0,
+        time: 0
+      },
+      focused: false,
       characters,
-      mistakes: 0,
       target: 0,
       intervalId: 0,
       complete: false,
-      seconds: 0,
       correctlyTypedCharacters: 0
     }
   }
@@ -75,11 +79,18 @@ class TypingArea extends Component {
   // create a timer to track how long the user is typing for
   startTimer = () => {
     if (!this.state.intervalId) {
+      let t = 0
       const intervalId = setInterval(() => {
-        this.setState({
-          seconds: this.state.seconds + 1
+        t = parseFloat(t) + 0.1
+        t = t.toFixed(1)
+        this.setState(prevState => {
+          const { score } = prevState
+          score.time = t
+          return {
+            score
+          }
         })
-      }, 1000)
+      }, 100)
       this.setState({intervalId})
     }
   }
@@ -88,7 +99,8 @@ class TypingArea extends Component {
       this.setState(prevState => {
         prevState.characters[prevState.target].cursor = true
         return {
-          characters: prevState.characters
+          characters: prevState.characters,
+          focused: true
         }
       })
     }
@@ -160,41 +172,79 @@ class TypingArea extends Component {
       })
     }
     // if the value was not correct, update the mistakes by 1
-    this.setState({ mistakes: this.state.mistakes + 1 })
+    this.setState(prevState => {
+      const { score } = prevState
+      score.mistakes = score.mistakes + 1
+      return {
+        score
+      }
+    })
   }
 
   stopTimer = () => {
     clearInterval(this.state.intervalId)
   }
-  wpm = () => {
-    return Math.round((this.state.correctlyTypedCharacters / 5) / (this.state.seconds / 60))
-  }
-
   characters = () => {
     return this.state.characters.map((char, i) =>
       <Character highlight={char.highlight} key={i} cursor={char.cursor} character={char.character} />
     )
   }
+  onSubmitScore = () => {
+    const { exerciseId } = this.props
+    const { score } = this.state
+    create(exerciseId, score)
+      .then(console.log)
+      // TODO handle this error
+      .catch(console.error)
+  }
   render () {
-    return (
-      <div>
-        <ul>
-          <li>Mistakes: {this.state.mistakes}</li>
-          <li>Time(seconds) {this.state.seconds}</li>
-          <li>Words Per Minute: {this.wpm()}</li>
-        </ul>
+    const { time, mistakes } = this.state.score
+    const { focused, complete, correctlyTypedCharacters: total } = this.state
+    const style = {
+      display: 'inline-block',
+      marginTop: '10px'
+    }
+    const code = classNames(
+      {shadow: focused},
+      {code: true}
+    )
+    const helpClass = classNames(
+      {hidden: focused}
+    )
 
-        <Divider />
-        <div className="typing-wrapper" onBlur={this.onBlur} onFocus={this.onFocus} tabIndex="1" onKeyPress={this.onCharacterEntered}>
-          <pre style={preStyle} className="code">
+    return (
+      <div style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
+        <CSSTransitionGroup
+          transitionName="example"
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}>
+          { complete &&
+            <Scorecard
+              mistakes={mistakes}
+              time={Score.formatTime(time)}
+              wpm={Score.wpm(total, time)}
+              accuracy={Score.accuracy(total, mistakes)}
+              onSubmit={this.onSubmitScore}/>
+          }
+        </CSSTransitionGroup>
+      { !complete && <p className={helpClass}>Click below to start</p> }
+        <Paper style={style}>
+        <div className="typing-wrapper"
+          onBlur={this.onBlur}
+          onFocus={this.onFocus}
+          tabIndex="1"
+          onKeyPress={this.onCharacterEntered}>
+          <pre className={code}>
             {this.characters()}
           </pre>
         </div>
+      </Paper>
       </div>
     )
   }
 }
 TypingArea.propTypes = {
-  text: PropTypes.string.isRequired
+  text: PropTypes.string.isRequired,
+  exerciseId: PropTypes.string.isRequired
 }
 export default TypingArea

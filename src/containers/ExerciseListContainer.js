@@ -5,13 +5,19 @@ import { index, destroy } from '../utils/exercise-api'
 import RaisedButton from 'material-ui/RaisedButton'
 import ExerciseItem from '../components/ExerciseItem'
 import '../styles/ExerciseList.css'
+import Sort from 'material-ui/svg-icons/content/sort'
+import IconMenu from 'material-ui/IconMenu'
+import MenuItem from 'material-ui/MenuItem'
+import IconButton from 'material-ui/IconButton'
+import Score from '../modules/Score'
 
 class ExerciseListContainer extends Component {
   constructor () {
     super()
     this.state = {
       exercises: [],
-      selectedIndex: 0
+      selectedIndex: 0,
+      sort: 'popular'
     }
   }
 
@@ -20,6 +26,36 @@ class ExerciseListContainer extends Component {
       .then(res => this.setState({exercises: res.exercises}))
       // TODO handle this error
       .catch(console.error)
+  }
+  sortLength = (a, b) => {
+    return a.text.length > b.length.text
+  }
+  sortDifficulty = (a, b) => {
+    return Score.difficulty(a.scores) > Score.difficulty(b.scores)
+  }
+  sortNewest = (a, b) => {
+    return a.createdAt > b.createdAt
+  }
+  sortMostPopular = (a, b) => {
+    return a.scores.length > b.scores.length
+  }
+  sort = (type) => {
+    const exercises = this.state.exercises
+    switch (type) {
+      case 'popular':
+        exercises.sort(this.sortMostPopular)
+        break
+      case 'length':
+        exercises.sort(this.sortNewest)
+        break
+      case 'newest':
+        exercises.sort(this.sortNewest)
+        break
+      case 'difficulty':
+        exercises.sort(this.sortDifficulty)
+        break
+    }
+    return exercises
   }
 
   onStartExercise = (e) => {
@@ -35,6 +71,16 @@ class ExerciseListContainer extends Component {
       case 'delete': this.onDelete(id)
         break
     }
+  }
+  onSortChange = (e, sortValue) => {
+    let exercises = this.sort(sortValue)
+    if (sortValue === this.state.sort) {
+      exercises.reverse()
+    }
+    this.setState({
+      exercises,
+      sort: sortValue
+    })
   }
 
   onAdd = () => this.props.history.push('/exercises/new')
@@ -73,8 +119,18 @@ class ExerciseListContainer extends Component {
       <div>
         <div>
           <div className='list-header'>
+            <RaisedButton className='add-action' onClick={this.onAdd} primary label="Add Exercise"/>
             <h2>Exercises</h2>
-            <RaisedButton className='add-action' onClick={this.onAdd} primary label="New Exercise"/>
+            Sort
+            <IconMenu
+
+              iconButtonElement={<IconButton><Sort /></IconButton>}
+              onChange={this.onSortChange}>
+              <MenuItem value="length" primaryText="Length" />
+              <MenuItem value="difficulty" primaryText="Difficulty" />
+              <MenuItem value="new" primaryText="Newest" />
+              <MenuItem value="popular" primaryText="Most Popular" />
+            </IconMenu>
           </div>
           {exercises}
           </div>

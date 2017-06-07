@@ -30,6 +30,17 @@ class Score {
     }, 0)
     return Math.round(sum / scores.length)
   }
+  static difficulty (scores) {
+    const wpm = this.averageWpm(scores)
+    const acc = this.averageAccuracy(scores)
+    const wWpm = (wpm / 100) * 0.5
+    const wAcc = (acc / 100) * 0.5
+    let difficulty = Math.round((wWpm + wAcc) * 10)
+    if (difficulty > 10) {
+      difficulty = 10
+    }
+    return difficulty
+  }
 }
 
 export default Score

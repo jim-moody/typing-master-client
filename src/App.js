@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom'
 // Material UI
 import injectTapEventPlugin from 'react-tap-event-plugin'
-import {blue700, indigoA200} from 'material-ui/styles/colors'
+import {teal500, tealA700} from 'material-ui/styles/colors'
 import getMuiTheme from 'material-ui/styles/getMuiTheme'
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import Snackbar from 'material-ui/Snackbar'
@@ -31,8 +31,8 @@ import EditExerciseContainer from './containers/EditExerciseContainer'
 // set the material Theme
 const muiTheme = getMuiTheme({
   palette: {
-    primary1Color: blue700,
-    accent1Color: indigoA200
+    primary1Color: teal500,
+    accent1Color: teal500
   }
 })
 

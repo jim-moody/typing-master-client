@@ -7,12 +7,14 @@ import classNames from 'classnames'
 import { CSSTransitionGroup } from 'react-transition-group' // ES6
 import Scorecard from '../components/Scorecard'
 import Score from '../modules/Score'
-
+import TypingAssistant from './TypingAssistant'
+import Popover from 'material-ui/Popover'
 import '../styles/TypingArea.css'
 
 class TypingArea extends Component {
   constructor (props) {
     super(props)
+    // console.log(props.history)
 
     const characters = this.formatCharacters(props.text)
     this.state = {
@@ -25,7 +27,8 @@ class TypingArea extends Component {
       target: 0,
       intervalId: 0,
       complete: false,
-      correctlyTypedCharacters: 0
+      correctlyTypedCharacters: 0,
+      isBlocking: true
     }
   }
   // if the user leaves halfway through a lesson, make sure to turn the timer off
@@ -193,7 +196,9 @@ class TypingArea extends Component {
     const { exerciseId } = this.props
     const { score } = this.state
     create(exerciseId, score)
-      .then(console.log)
+      .then(() => {
+        this.props.history.push('/exercises')
+      })
       // TODO handle this error
       .catch(console.error)
   }
@@ -204,16 +209,14 @@ class TypingArea extends Component {
       display: 'inline-block',
       marginTop: '10px'
     }
-    const code = classNames(
-      {shadow: focused},
-      {code: true}
-    )
     const helpClass = classNames(
-      {hidden: focused}
+      {hidden: focused},
+      {'div-overlay': true}
     )
-
+    const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
     return (
       <div style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
+        <h2 style={{textAlign: 'center'}}>Typing Area</h2>
         <CSSTransitionGroup
           transitionName="example"
           transitionEnterTimeout={500}
@@ -227,22 +230,24 @@ class TypingArea extends Component {
               onSubmit={this.onSubmitScore}/>
           }
         </CSSTransitionGroup>
-      { !complete && <p className={helpClass}>Click below to start</p> }
         <Paper style={style}>
         <div className="typing-wrapper"
           onBlur={this.onBlur}
           onFocus={this.onFocus}
           tabIndex="1"
           onKeyPress={this.onCharacterEntered}>
-          <pre className={code}>
+          <pre className='code'>
             {this.characters()}
           </pre>
         </div>
       </Paper>
+      <Popover />
+      <TypingAssistant character={char} />
       </div>
     )
   }
 }
+// { !complete && <div className={helpClass} > Click here to start</div> }
 TypingArea.propTypes = {
   text: PropTypes.string.isRequired,
   exerciseId: PropTypes.string.isRequired

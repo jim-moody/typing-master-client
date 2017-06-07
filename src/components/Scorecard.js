@@ -3,20 +3,11 @@ import React from 'react'
 import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
 import '../styles/Scorecard.css'
-const Scorecard = ({mistakes, time, wpm, accuracy, onSubmit}) =>
+const Scorecard = ({complete, mistakes, time, wpm, accuracy, onSubmit}) =>
 <div className='Scorecard'>
   <Paper>
     <div>
-      <h3 style={{marginBottom: '0'}}>Score</h3>
     <ul>
-      <li>
-        <span>Mistakes</span>
-        <span>{mistakes}</span>
-      </li>
-      <li>
-        <span>Seconds</span>
-        <span>{time}</span>
-      </li>
       <li>
         <span>Words Per Minute</span>
         <span>{wpm}</span>
@@ -26,7 +17,7 @@ const Scorecard = ({mistakes, time, wpm, accuracy, onSubmit}) =>
         <span>{accuracy}%</span>
       </li>
     </ul>
-    <RaisedButton style={{marginBottom: '10px'}}onClick={onSubmit} primary label="Submit" />
+    { complete && <RaisedButton style={{marginBottom: '10px'}}onClick={onSubmit} primary label="Submit" /> }
     </div>
   </Paper>
 </div>

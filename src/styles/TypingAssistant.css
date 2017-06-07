@@ -1,0 +1,46 @@
+.TypingAssistant .hand {
+  height: 100px;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+
+}
+ .TypingAssistant .fingers {
+   display: flex;
+  height: 40%;
+}
+.TypingAssistant .back {
+  background-color: blue;
+  width: 100%;
+  height: 60%;
+  border: 1px solid lightgray;
+  border-radius: 10px;
+}
+.TypingAssistant .finger {
+  border-radius: 5px;
+  width: 20%;
+  margin: 2px;
+  border: 1px solid black;
+  background-color: white;
+  transform: translateY(10px);
+}
+.TypingAssistant .thumb {
+  border-radius: 5px;
+}
+.TypingAssistant .thumb:first-child {
+  /*transform: rotate(-10deg);*/
+}
+.TypingAssistant .thumb:last-child {
+  /*transform: rotate(10deg);*/
+}
+
+.TypingAssistant .active {
+  background-color: red;
+}
+.TypingAssistant {
+  display: flex;
+  justify-content: space-around;
+}
+.TypingAssistant .finger.active{
+  background-color: red;
+}

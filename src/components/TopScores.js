@@ -11,6 +11,7 @@ import {
 } from 'material-ui/Table'
 import Score from '../modules/Score'
 import FlatButton from 'material-ui/FlatButton'
+import {teal500} from 'material-ui/styles/colors';
 
 class TopScores extends Component {
   constructor (props) {
@@ -55,11 +56,15 @@ class TopScores extends Component {
   onShowMore = () => {
     this.setState({expanded: !this.state.expanded})
   }
+  lengthAtLeast (number) {
+    return this.props.scores.length >= number
+  }
   render () {
     const buttonLabel = this.state.expanded ? 'Show Less' : 'Show More'
-    const atLeastOneTopScore = this.props.scores.length > 0
+
     const colWidth = ['15%', '35%', '20%', '15%', '15%']
     const fontSize = '1em'
+
     const rows = this.topScores().map((score, i) => {
       const date = moment(score.createdAt).format('M/D/YYYY')
       const accuracy = Score.accuracy(score.exerciseLength, score.mistakes)
@@ -80,7 +85,7 @@ class TopScores extends Component {
     return (
   <div>
     <div>
-    { atLeastOneTopScore
+    { this.lengthAtLeast(1)
       ? <div>
         <Table>
         <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
@@ -96,7 +101,9 @@ class TopScores extends Component {
           {rows}
         </TableBody>
       </Table>
-      <FlatButton onClick={this.onShowMore} label={buttonLabel}/>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+      { this.lengthAtLeast(5) && <FlatButton labelStyle={{color: teal500}} onClick={this.onShowMore} label={buttonLabel}/> }
+      </div>
       </div>
       : <p> No scores yet</p>
       }

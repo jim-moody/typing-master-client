@@ -79,7 +79,13 @@ class App extends Component {
     })
   }
   onSignOutFailure = () => {
-    this.triggerAlert('Sorry, there was an issue signing you out')
+    Auth.deauthenticateUser()
+    this.setState({
+      loggedIn: Auth.isUserAuthenticated(),
+      isLoading: false
+    })
+    this.props.history.push('/sign-in')
+    this.triggerAlert('Sorry, there was an issue signing you out. Try signing back in and then out.')
   }
   triggerAlert (message) {
     this.setState(prevState => {
@@ -117,7 +123,7 @@ class App extends Component {
               autoHideDuration={4000}
               onRequestClose={this.onHandleRequestClose}
               message={this.state.snackbar.message}/>
-          <PrivateRoute exact path="/" component={Main} />
+            <PrivateRoute exact path="/" component={ExerciseListContainer} />
           <Switch>
             <PrivateRoute exact path="/exercises" component={ExerciseListContainer} />
             <PrivateRoute path="/exercises/new" component={NewExercise} />

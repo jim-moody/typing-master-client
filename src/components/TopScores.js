@@ -102,7 +102,7 @@ class TopScores extends Component {
         </TableBody>
       </Table>
       <div style={{display: 'flex', justifyContent: 'center'}}>
-      { this.lengthAtLeast(5) && <FlatButton labelStyle={{color: teal500}} onClick={this.onShowMore} label={buttonLabel}/> }
+      { this.lengthAtLeast(6) && <FlatButton labelStyle={{color: teal500}} onClick={this.onShowMore} label={buttonLabel}/> }
       </div>
       </div>
       : <p> No scores yet</p>

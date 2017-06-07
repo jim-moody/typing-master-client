@@ -20,9 +20,10 @@ const UpdateExercise = ({onSubmit, onChange, exercise, errors, title}) =>
         <p className='error-message'>{errors.description}</p>
         <TextField onChange={onChange} floatingLabelText='Exercise Name' name="name"
           className="new-exercise" errorText={errors.name} value={exercise.name} />
-        <TextField onChange={onChange} floatingLabelStyle={{left: '0'}} floatingLabelText='Exercise Text'
+        <TextField maxLength={750} onChange={onChange} floatingLabelStyle={{left: '0'}} floatingLabelText='Exercise Text'
           name="text" className="new-exercise" fullWidth errorText={errors.text} value={exercise.text} multiLine/>
-        <div style={buttonContainer}>
+        <div style={{textAlign: 'left', color: 'lightgray', fontSize: '0.9em'}}>750 character limit</div>
+      <div style={buttonContainer}>
           <RaisedButton onClick={onSubmit} type="submit" primary label="Submit"/>
         </div>
   </div>

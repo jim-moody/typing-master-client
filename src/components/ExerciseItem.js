@@ -14,23 +14,18 @@ import TopScores from './TopScores'
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more'
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less'
 import classNames from 'classnames'
-import Score from '../modules/Score'
 import '../styles/ExerciseItem.css'
 import {teal500} from 'material-ui/styles/colors'
 
 class ExerciseItem extends Component {
   onItemClick = () => this.setState({expanded: !this.state.expanded})
   render () {
-    const {id, name, onItemTouchTap, editable, text, scores} = this.props
+    const {id, name, onItemTouchTap, editable, text} = this.props
 
     // if the exercise item has an editable button, then move the title over
     // 50px to make it line up
     const adjustForActions = !editable ? {marginRight: '50px'} : {}
-    const length = text.length
-    const averageWpm = Score.averageWpm(scores) || 'N/A'
-    const averageAccuracy = Score.averageAccuracy(scores)
-      ? Score.averageAccuracy(scores) + '%'
-      : 'N/A'
+
     return (
     <Paper className="ExerciseItem" style={{margin: '20px auto', maxWidth: '700px' }}>
 
@@ -51,9 +46,9 @@ class ExerciseItem extends Component {
       <Divider />
       <div className="options">
         <div className="attributes">
-          <div><span>Length:</span> {length}</div>
-            <div><span>Average WPM:</span> {averageWpm}</div>
-            <div><span>Accuracy:</span> {averageAccuracy}</div>
+          <div><span>Length:</span> 100</div>
+            <div><span>Average WPM:</span> 10</div>
+            <div><span>Accuracy:</span> 95%</div>
         </div>
         <div className="start">
           <Link to={`/exercises/${id}`} >

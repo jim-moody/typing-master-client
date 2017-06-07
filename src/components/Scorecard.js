@@ -2,9 +2,9 @@
 import React from 'react'
 import RaisedButton from 'material-ui/RaisedButton'
 import Paper from 'material-ui/Paper'
-import '../styles/Scorecard.css'
+
 const Scorecard = ({mistakes, time, wpm, accuracy, onSubmit}) =>
-<div className='Scorecard'>
+<div className='scorecard'>
   <Paper>
     <div>
       <h3 style={{marginBottom: '0'}}>Score</h3>

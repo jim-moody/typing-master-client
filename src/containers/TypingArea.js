@@ -1,3 +1,4 @@
+/* eslint react/prop-types: 0 */
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import Character from './Character'
@@ -9,15 +10,19 @@ import Scorecard from '../components/Scorecard'
 import Score from '../modules/Score'
 import TypingAssistant from './TypingAssistant'
 import Popover from 'material-ui/Popover'
+import RaisedButton from 'material-ui/RaisedButton'
 import '../styles/TypingArea.css'
+import Timer from '../modules/Timer'
 
 class TypingArea extends Component {
   constructor (props) {
     super(props)
-    // console.log(props.history)
 
-    const characters = this.formatCharacters(props.text)
-    this.state = {
+    this.state = this.getInitialState()
+  }
+  getInitialState = () => {
+    const characters = this.formatCharacters(this.props.text)
+    return {
       score: {
         mistakes: 0,
         time: 0
@@ -27,10 +32,10 @@ class TypingArea extends Component {
       target: 0,
       intervalId: 0,
       complete: false,
-      correctlyTypedCharacters: 0,
-      isBlocking: true
+      correctlyTypedCharacters: 0
     }
   }
+
   // if the user leaves halfway through a lesson, make sure to turn the timer off
   componentWillUnmount () {
     this.stopTimer(this.state.intervalId)
@@ -81,21 +86,10 @@ class TypingArea extends Component {
   }
   // create a timer to track how long the user is typing for
   startTimer = () => {
-    if (!this.state.intervalId) {
-      let t = 0
-      const intervalId = setInterval(() => {
-        t = parseFloat(t) + 0.1
-        t = t.toFixed(1)
-        this.setState(prevState => {
-          const { score } = prevState
-          score.time = t
-          return {
-            score
-          }
-        })
-      }, 100)
-      this.setState({intervalId})
-    }
+    let intervalId = Timer.startTimer()
+    this.setState({
+      intervalId
+    })
   }
   onFocus = () => {
     if (!this.state.complete) {
@@ -121,89 +115,94 @@ class TypingArea extends Component {
   onCharacterEntered = (e) => {
     // prevent spacebar from scrolling down the page
     e.preventDefault()
-    // start the timer up because the user is now typing (dont worry we
-    // check to make sure the timer isnt already started first)
-    this.startTimer()
-    const characterEntered = this.getCharacterEntered(e.which)
-    const isCorrect = !this.state.complete && this.validate(characterEntered)
+    const isComplete = this.state.complete
+    if (!isComplete) {
+      // start the timer up because the user is now typing (dont worry we
+      // check to make sure the timer isnt already started first)
+      if (!this.state.intervalId) this.startTimer()
 
-    //  if the value is correct, start updating the state
-    if (isCorrect) {
-      return this.setState(prevState => {
-        let characters = prevState.characters
-        let target = prevState.target
-        let complete = false
-        characters[target].cursor = false
+      const characterEntered = this.getCharacterEntered(e.which)
+      const isCorrect = this.validate(characterEntered)
 
-        // if user hits Enter, change the target to the next non space character
-        if (characterEntered === '\n') {
-          target = this.autoTab()
-        }
-        // as long as its not the last character, move the cursor right one position
-        if (characters.length > prevState.target + 1) {
-          characters[target + 1].cursor = true
-        }
-        // update the target now that the cursor has been reset
-        target++
+      //  if the value is correct, start updating the state
+      if (isCorrect) {
+        return this.setState(prevState => {
+          let characters = prevState.characters
+          let target = prevState.target
+          let complete = prevState.complete
+          characters[target].cursor = false
 
-        // use is complete if the target is = to the length of the text blob
-        if (characters.length === target) {
-          complete = true
-          this.stopTimer(this.state.intervalId)
-        }
-        // if the user autotabbed, update all the characters up until the current
-        // position to be highlighted
-        if (characterEntered === '\n') {
-          characters.forEach((char, i) => {
-            if (i < target) {
-              char.highlight = true
-            }
-          })
-          // if the user DID NOT autotab, only update the previous character
-          // the reason for the 'else' is because I was seeing performance issues
-          // when i mapped a new array on every single character entered
-        } else {
-          characters[target - 1].highlight = true
-        }
+          // if user hits Enter, change the target to the next non space character
+          if (characterEntered === '\n') {
+            target = this.autoTab()
+          }
+          // as long as its not the last character, move the cursor right one position
+          if (characters.length > prevState.target + 1) {
+            characters[target + 1].cursor = true
+          }
+          // update the target now that the cursor has been reset
+          target++
 
-        return {
-          characters,
-          target,
-          complete,
-          correctlyTypedCharacters: prevState.correctlyTypedCharacters + 1
-        }
-      })
-    }
-    // if the value was not correct, update the mistakes by 1
-    this.setState(prevState => {
-      const { score } = prevState
-      score.mistakes = score.mistakes + 1
-      return {
-        score
+          // use is complete if the target is = to the length of the text blob
+          if (characters.length === target) {
+            complete = true
+            Timer.stopTimer(this.state.intervalId)
+          }
+          // if the user autotabbed, update all the characters up until the current
+          // position to be highlighted
+          if (characterEntered === '\n') {
+            characters.forEach((char, i) => {
+              if (i < target) {
+                char.highlight = true
+              }
+            })
+            // if the user DID NOT autotab, only update the previous character
+            // the reason for the 'else' is because I was seeing performance issues
+            // when i mapped a new array on every single character entered
+          } else {
+            characters[target - 1].highlight = true
+          }
+
+          return {
+            characters,
+            target,
+            complete,
+            correctlyTypedCharacters: prevState.correctlyTypedCharacters + 1
+          }
+        })
+      } else {
+        // if the value was not correct, update the mistakes by 1
+        this.setState(prevState => {
+          const { score } = prevState
+          score.mistakes = score.mistakes + 1
+          return {
+            score
+          }
+        })
       }
-    })
+    }
   }
 
   stopTimer = () => {
-    clearInterval(this.state.intervalId)
+    Timer.stopTimer(this.state.intervalId)
   }
   characters = () => {
     return this.state.characters.map((char, i) =>
       <Character highlight={char.highlight} key={i} cursor={char.cursor} character={char.character} />
     )
   }
+
   onSubmitScore = () => {
     const { exerciseId } = this.props
     const { score } = this.state
+    score.time = Timer.getTime()
     create(exerciseId, score)
-      .then(() => {
-        this.props.history.push('/exercises')
-      })
+      .then(() => this.setState(this.getInitialState()))
       // TODO handle this error
       .catch(console.error)
   }
   render () {
-    const { time, mistakes } = this.state.score
+    const { mistakes } = this.state.score
     const { focused, complete, correctlyTypedCharacters: total } = this.state
     const style = {
       display: 'inline-block',
@@ -215,8 +214,8 @@ class TypingArea extends Component {
     )
     const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
     return (
-      <div style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
-        <h2 style={{textAlign: 'center'}}>Typing Area</h2>
+      <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
+        <h2 style={{textAlign: 'center'}}>{this.props.name}</h2>
         <CSSTransitionGroup
           transitionName="example"
           transitionEnterTimeout={500}
@@ -224,8 +223,8 @@ class TypingArea extends Component {
           { complete &&
             <Scorecard
               mistakes={mistakes}
-              time={Score.formatTime(time)}
-              wpm={Score.wpm(total, time)}
+              time={Score.formatTime(Timer.getTime())}
+              wpm={Score.wpm(total, Timer.getTime())}
               accuracy={Score.accuracy(total, mistakes)}
               onSubmit={this.onSubmitScore}/>
           }
@@ -233,9 +232,14 @@ class TypingArea extends Component {
         <Paper style={style}>
         <div className="typing-wrapper"
           onBlur={this.onBlur}
-          onFocus={this.onFocus}
           tabIndex="1"
-          onKeyPress={this.onCharacterEntered}>
+          onKeyPress={this.onCharacterEntered}
+          onFocus={this.onFocus}>
+          { !complete &&
+            <div className={helpClass}>
+              Click here to start
+            </div>
+          }
           <pre className='code'>
             {this.characters()}
           </pre>
@@ -247,9 +251,5 @@ class TypingArea extends Component {
     )
   }
 }
-// { !complete && <div className={helpClass} > Click here to start</div> }
-TypingArea.propTypes = {
-  text: PropTypes.string.isRequired,
-  exerciseId: PropTypes.string.isRequired
-}
+
 export default TypingArea

@@ -1,4 +1,3 @@
-/* eslint react/prop-types: 0 */
 import React, {Component} from 'react'
 import '../styles/TypingAssistant.css'
 import FingerMap from '../modules/FingerMap'
@@ -30,7 +29,6 @@ class TypingAssistant extends Component {
 
     return (
       <div className='TypingAssistant'>
-        <div className="hands">
         <div className="hand">
           <div className="fingers">
             {leftFingers}
@@ -42,14 +40,6 @@ class TypingAssistant extends Component {
             {rightFingers}
           </div>
           <div className="back"></div>
-        </div>
-        </div>
-        <div className="body">
-          <div className='arm'></div>
-          <div className="head">
-            TypeBot
-          </div>
-          <div className='arm'></div>
         </div>
       </div>
     )

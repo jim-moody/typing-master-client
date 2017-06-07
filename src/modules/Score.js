@@ -14,21 +14,8 @@ class Score {
     return wpm
   }
   static accuracy (total, mistakes) {
-    let accuracy = Math.round(((total - mistakes) / total) * 100)
-    if (!accuracy || accuracy < 0) {
-      accuracy = 0
-    }
+    const accuracy = Math.round(((total - mistakes) / total) * 100) || 0
     return accuracy
-  }
-  static averageWpm (scores) {
-    const sum = scores.reduce((acc, score) => acc + score.wpm, 0)
-    return Math.round(sum / scores.length)
-  }
-  static averageAccuracy (scores) {
-    const sum = scores.reduce((acc, score) => {
-      return acc + this.accuracy(score.exerciseLength, score.mistakes)
-    }, 0)
-    return Math.round(sum / scores.length)
   }
 }
 

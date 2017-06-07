@@ -11,29 +11,45 @@ class ExerciseContainer extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      text: '',
-      id: '',
-      scores: []
+      exercise: {
+        text: '',
+        name: '',
+        id: '',
+        scores: []
+      },
+      tabValue: 1
+    }
+  }
+  onActive = (e) => {
+    this.selectTab(e.props.value)
+    if (e.props.value === 2) {
+      this.refreshScores()
     }
   }
 
-  componentDidMount () {
+  refreshScores () {
     show(this.props.match.params.id)
-      .then(res => this.setState({text: res.exercise.text, scores: res.exercise.scores}))
+      .then(res => this.setState({exercise: res.exercise}))
       .catch(console.error)
+  }
+  componentDidMount () {
+    this.refreshScores()
+  }
+  selectTab = (value) => {
+    this.setState({value})
   }
   render () {
     const props = this.props
-
+    const { exercise } = this.state
     return (
-      <Tabs tabItemContainerStyle={{backgroundColor: teal700}}  >
-        <Tab label='Exercise'>
-        <TypingArea text={this.state.text} exerciseId={this.props.match.params.id} {...props} />
+      <Tabs  value={this.state.value} tabItemContainerStyle={{backgroundColor: teal700}}>
+        <Tab onActive={this.onActive} value={1} label='Exercise'>
+        <TypingArea onSubmitScore={this.selectTab} name={exercise.name} text={exercise.text} exerciseId={exercise.id} {...props} />
           </Tab>
-          <Tab label='Leaderboard'>
+          <Tab onActive={this.onActive} value={2} label='Leaderboard'>
           <h2 style={{textAlign: 'center'}}>Leaderboard</h2>
         <Paper style={{maxWidth: '700px', margin: '20px auto', overflow: 'hidden'}}>
-        <TopScores scores={this.state.scores}/>
+        <TopScores scores={exercise.scores}/>
         </Paper>
         </Tab>
       </Tabs>

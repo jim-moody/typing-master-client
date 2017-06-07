@@ -1,0 +1,35 @@
+.ExerciseItem .options {
+  display: flex;
+  align-items: center;
+}
+
+.ExerciseItem .attributes {
+  flex: 1;
+  text-align: left;
+  margin-left: 10px;
+  display: flex;
+}
+
+.ExerciseItem .attributes > div{
+  padding: 0 10px;
+}
+
+.ExerciseItem span {
+  color: gray;
+}
+
+.ExerciseItem .exercise-name {
+  padding: 20px;
+}
+
+.ExerciseItem .paper-list-item {
+  display: flex;
+  align-items: center;
+  padding: 0;
+
+}
+
+.ExerciseItem .paper-list-main {
+  flex: 1;
+  font-size: 1.3em;
+}

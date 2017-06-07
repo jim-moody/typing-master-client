@@ -7,11 +7,17 @@ import AppBar from 'material-ui/AppBar'
 import AppLoader from './AppLoader'
 
 // Displays different items in the drawer depending on if the user is logged in
-const NavBar = ({loggedIn, signOut, open, toggleDrawer, isLoading}) =>
+const styles = {
+  title: {
+    cursor: 'pointer'
+  }
+}
+const NavBar = ({loggedIn, signOut, open, toggleDrawer, isLoading, onTitleTouchTap}) =>
 <div>
 <AppBar
-  title="Typing Master"
+  title={<Link to="/"><span style={styles.title}>Typing Master</span></Link>}
   onLeftIconButtonTouchTap={toggleDrawer}
+  onTitleTouchTap={onTitleTouchTap}
 />
   <Drawer
     style={{textAlign: 'left'}}

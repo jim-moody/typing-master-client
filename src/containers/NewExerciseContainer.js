@@ -1,7 +1,5 @@
+/* eslint react/prop-types: 0 */
 import React, {Component} from 'react'
-import { Redirect } from 'react-router-dom'
-import PropTypes from 'prop-types'
-
 import {createExercise} from '../utils/exercise-api'
 import UpdateExercise from '../components/UpdateExercise'
 import Validator from '../modules/Validator'
@@ -16,8 +14,7 @@ class EditExerciseContainer extends Component {
         name: '',
         text: ''
       },
-      errors: {},
-      redirect: false
+      errors: {}
     }
   }
 
@@ -44,35 +41,22 @@ class EditExerciseContainer extends Component {
       return
     }
     createExercise(this.state.exercise)
-      .then(() => {
-        this.setState({
-          path: '/exercises',
-          redirect: true
-        })
-      })
+      .then(() => this.props.history.push('/exercises'))
       .catch(console.error)
   }
   render () {
-    const {redirect} = this.state
     return (
       <div>
-        {redirect
-          ? <Redirect to="/exercises"/>
-        : <UpdateExercise
+        <UpdateExercise
             onChange={this.onChangeExercise}
             onSubmit={this.onSubmit}
             exercise={this.state.exercise}
             errors={this.state.errors}
             title='New Exercise'
             />
-}
       </div>
     )
   }
-}
-
-EditExerciseContainer.propTypes = {
-  match: PropTypes.object
 }
 
 export default EditExerciseContainer

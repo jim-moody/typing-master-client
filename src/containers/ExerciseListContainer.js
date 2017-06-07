@@ -1,10 +1,8 @@
+/* eslint react/prop-types: 0 */
 import React, { Component } from 'react'
-import { Redirect } from 'react-router-dom'
 import { index, destroy } from '../utils/exercise-api'
 // Material UI
-import FloatingActionButton from 'material-ui/FloatingActionButton'
-import ContentAdd from 'material-ui/svg-icons/content/add'
-
+import RaisedButton from 'material-ui/RaisedButton'
 import ExerciseItem from '../components/ExerciseItem'
 import '../styles/ExerciseList.css'
 
@@ -13,50 +11,34 @@ class ExerciseListContainer extends Component {
     super()
     this.state = {
       exercises: [],
-      selectedIndex: 0,
-      redirect: false
+      selectedIndex: 0
     }
   }
+
   componentDidMount () {
     index()
       .then(res => this.setState({exercises: res.exercises}))
       // TODO handle this error
       .catch(console.error)
   }
-  handleRequestChange = (event, index) => {
-    this.setState({
-      selectedIndex: index,
-      redirect: true
-    })
+
+  onStartExercise = (e) => {
+    const id = e.target.getAttribute('data-value')
+    this.props.history.push(`/exercises/${id}`)
   }
-  onExerciseClick = (e) => {
-    this.setState({
-      path: `/exercises/${e.target.getAttribute('data-value')}`,
-      redirect: true
-    })
-  }
+
   onItemTouchTap = (e, c) => {
     const id = c.props.value
     switch (c.props.name) {
-      case 'edit': this.onEdit(id)
+      case 'edit': this.props.history.push('/exercises/edit/' + id)
         break
       case 'delete': this.onDelete(id)
         break
     }
   }
-  onEdit = (id) => {
-    this.setState({
-      path: '/exercises/edit/' + id,
-      redirect: true
-    })
-  }
 
-  onAdd = () => {
-    this.setState({
-      path: '/exercises/new',
-      redirect: true
-    })
-  }
+  onAdd = () => this.props.history.push('/exercises/new')
+
   onDelete = (id) => {
     destroy(id)
       .then(() => {
@@ -70,34 +52,32 @@ class ExerciseListContainer extends Component {
       // TODO handle this error
       .catch(console.error)
   }
+
   render () {
     const exercises = this.state.exercises.map((exercise, i) => {
       return (
         <ExerciseItem key={i}
           onItemTouchTap={this.onItemTouchTap}
-          onExerciseClick={this.onExerciseClick}
+          onExerciseClick={this.onStartExercise}
           name={exercise.name}
           id={exercise.id}
           onEdit={this.onEdit}
           onDelete={this.onDelete}
           scores={exercise.scores}
-          editable={exercise.editable} />
+          editable={exercise.editable}
+          text={exercise.text} />
       )
     })
-    const { path, redirect } = this.state
+
     return (
       <div>
-      { redirect ? <Redirect push to={path} />
-      : <div>
-          <div className="list-header">
+        <div>
+          <div className='list-header'>
             <h2>Exercises</h2>
-            <FloatingActionButton onTouchTap={this.onAdd} mini>
-              <ContentAdd />
-            </FloatingActionButton>
+            <RaisedButton className='add-action' onClick={this.onAdd} primary label="New Exercise"/>
           </div>
           {exercises}
           </div>
-    }
     </div>
     )
   }

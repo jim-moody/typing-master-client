@@ -57,7 +57,7 @@ class ExerciseItem extends Component {
         </div>
         <div className="start">
           <Link to={`/exercises/${id}`} >
-            <RaisedButton style={{margin: '20px'}} labelColor={teal500} label="View Exercise" />
+            <RaisedButton style={{margin: '20px'}} labelColor={teal500} label="Try Exercise" />
           </Link>
           </div>
         </div>

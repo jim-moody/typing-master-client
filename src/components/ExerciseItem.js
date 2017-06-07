@@ -13,26 +13,25 @@ import RaisedButton from 'material-ui/RaisedButton'
 import TopScores from './TopScores'
 import ExpandMore from 'material-ui/svg-icons/navigation/expand-more'
 import ExpandLess from 'material-ui/svg-icons/navigation/expand-less'
+import classNames from 'classnames'
+import '../styles/ExerciseItem.css'
+import {teal500} from 'material-ui/styles/colors'
 
 class ExerciseItem extends Component {
-  constructor () {
-    super()
-    this.state = {
-      expanded: false
-    }
-  }
   onItemClick = () => this.setState({expanded: !this.state.expanded})
   render () {
-    const {id, name, onItemTouchTap, scores, editable} = this.props
-    const { expanded } = this.state
-    const expandStyle = {float: 'left'}
+    const {id, name, onItemTouchTap, editable, text} = this.props
+
+    // if the exercise item has an editable button, then move the title over
+    // 50px to make it line up
+    const adjustForActions = !editable ? {marginRight: '50px'} : {}
+
     return (
-    <Paper style={{ margin: '20px auto', maxWidth: '700px' }}>
+    <Paper className="ExerciseItem" style={{margin: '20px auto', maxWidth: '700px' }}>
 
       <div className='paper-list-item'>
         <div data-value={id} onClick={this.onItemClick} className='paper-list-main'>
-          {expanded ? <ExpandMore style={expandStyle} /> : <ExpandLess style={expandStyle} /> }
-          <div>
+          <div className='exercise-name' style={adjustForActions}>
             {name}
           </div>
         </div>
@@ -45,15 +44,21 @@ class ExerciseItem extends Component {
         }
       </div>
       <Divider />
-      { expanded &&
-        <div>
-         <TopScores scores={scores}/>
-           <Divider />
-           <Link to={`/exercises/${id}`} >
-         <RaisedButton style={{ margin: '20px' }} primary label="Start" />
-         </Link>
-       </div>
-      }
+      <div className="options">
+        <div className="attributes">
+          <div><span>Length:</span> 100</div>
+            <div><span>Average WPM:</span> 10</div>
+            <div><span>Accuracy:</span> 95%</div>
+        </div>
+        <div className="start">
+          <Link to={`/exercises/${id}`} >
+            <RaisedButton style={{margin: '20px'}} labelColor={teal500} label="View Exercise" />
+          </Link>
+          </div>
+        </div>
+
+      <Divider />
+
     </Paper>
 
     )

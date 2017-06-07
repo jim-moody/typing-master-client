@@ -213,15 +213,16 @@ class TypingArea extends Component {
       {'div-overlay': true}
     )
     const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
+    const showScorecard = complete || this.props.scorecard
     return (
-      <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
-        <h2 style={{textAlign: 'center'}}>{this.props.name}</h2>
+      <div>
         <CSSTransitionGroup
           transitionName="example"
           transitionEnterTimeout={500}
           transitionLeaveTimeout={300}>
-          { complete &&
+          { showScorecard &&
             <Scorecard
+              complete={complete}
               mistakes={mistakes}
               time={Score.formatTime(Timer.getTime())}
               wpm={Score.wpm(total, Timer.getTime())}
@@ -246,7 +247,7 @@ class TypingArea extends Component {
         </div>
       </Paper>
       <Popover />
-      <TypingAssistant character={char} />
+      { this.props.assistant && <TypingAssistant character={char} /> }
       </div>
     )
   }

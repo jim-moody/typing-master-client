@@ -1,0 +1,17 @@
+.Exercise .header {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.Exercise .title {
+  flex: 1;
+}
+.Exercise .header {
+  margin-top: 20px;
+}
+
+.Exercise .toggle {
+  position: absolute;
+  right: 0;
+}

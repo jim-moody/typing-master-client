@@ -5,7 +5,9 @@ import TypingArea from './TypingArea'
 import Paper from 'material-ui/Paper'
 import TopScores from '../components/TopScores'
 import {Tabs, Tab} from 'material-ui/Tabs'
+import Toggle from 'material-ui/Toggle';
 import {teal700} from 'material-ui/styles/colors'
+import '../styles/Exercise.css'
 
 class ExerciseContainer extends Component {
   constructor (props) {
@@ -17,6 +19,8 @@ class ExerciseContainer extends Component {
         id: '',
         scores: []
       },
+      assistantToggled: false,
+      scoreToggled: false,
       tabValue: 1
     }
   }
@@ -38,13 +42,45 @@ class ExerciseContainer extends Component {
   selectTab = (value) => {
     this.setState({value})
   }
+  onAssistantToggle = () => {
+    this.setState({assistantToggled: !this.state.assistantToggled})
+  }
+  onScoreToggle = () => {
+    this.setState({scoreToggled: !this.state.scoreToggled})
+  }
   render () {
     const props = this.props
     const { exercise } = this.state
     return (
-      <Tabs  value={this.state.value} tabItemContainerStyle={{backgroundColor: teal700}}>
+      <div className="Exercise">
+      <Tabs value={this.state.value} tabItemContainerStyle={{backgroundColor: teal700}}>
         <Tab onActive={this.onActive} value={1} label='Exercise'>
-        <TypingArea onSubmitScore={this.selectTab} name={exercise.name} text={exercise.text} exerciseId={exercise.id} {...props} />
+        <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
+          <div className='header'>
+            <div className='title'>
+              <h2 style={{textAlign: 'center'}}>{exercise.name}</h2>
+            </div>
+            <div className='toggle'>
+          <Toggle
+            onToggle={this.onAssistantToggle}
+            toggled={this.state.assistantToggled}
+            labelPosition="right"
+            label="Assistant" />
+            <Toggle
+              onToggle={this.onScoreToggle}
+              toggled={this.state.scoreToggled}
+              labelPosition="right"
+              label="Score" />
+          </div>
+          </div>
+        <TypingArea
+          onSubmitScore={this.selectTab}
+          name={exercise.name}
+          text={exercise.text}
+          exerciseId={exercise.id} {...props}
+          assistant={this.state.assistantToggled}
+          scorecard={this.state.scoreToggled} />
+        </div>
           </Tab>
           <Tab onActive={this.onActive} value={2} label='Leaderboard'>
           <h2 style={{textAlign: 'center'}}>Leaderboard</h2>
@@ -53,6 +89,7 @@ class ExerciseContainer extends Component {
         </Paper>
         </Tab>
       </Tabs>
+    </div>
     )
   }
 }

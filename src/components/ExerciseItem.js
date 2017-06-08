@@ -14,7 +14,6 @@ import '../styles/ExerciseItem.css'
 import {teal500} from 'material-ui/styles/colors'
 
 class ExerciseItem extends Component {
-  onItemClick = () => this.setState({expanded: !this.state.expanded})
   render () {
     const {id, name, onItemTouchTap, editable, text, scores} = this.props
 
@@ -27,10 +26,10 @@ class ExerciseItem extends Component {
       ? Score.averageAccuracy(scores) + '%'
       : 'N/A'
     return (
-    <Paper className="ExerciseItem" style={{margin: '20px auto', maxWidth: '700px' }}>
+    <Paper className="ExerciseItem" style={{ margin: '20px auto', maxWidth: '700px' }}>
 
       <div className='paper-list-item'>
-        <div data-value={id} onClick={this.onItemClick} className='paper-list-main'>
+        <div data-value={id} className='paper-list-main'>
           <div className='exercise-name' style={adjustForActions}>
             {name}
           </div>
@@ -49,6 +48,7 @@ class ExerciseItem extends Component {
           <div><span>Length:</span> {length}</div>
             <div><span>Average WPM:</span> {averageWpm}</div>
             <div><span>Accuracy:</span> {averageAccuracy}</div>
+            <div><span>Scores:</span> {scores.length}</div>
         </div>
         <div className="start">
           <Link to={`/exercises/${id}`} >

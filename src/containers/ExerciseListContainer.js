@@ -11,6 +11,7 @@ import MenuItem from 'material-ui/MenuItem'
 import IconButton from 'material-ui/IconButton'
 import Score from '../modules/Score'
 import AppLoader from '../components/AppLoader'
+import AppError from '../components/AppError'
 
 class ExerciseListContainer extends Component {
   constructor () {
@@ -22,7 +23,8 @@ class ExerciseListContainer extends Component {
         value: 'popular',
         ascending: true
       },
-      isLoading: false
+      isLoading: false,
+      error: false
     }
   }
 
@@ -30,7 +32,9 @@ class ExerciseListContainer extends Component {
     this.setState({isLoading: true})
     index()
       .then(res => this.setState({exercises: res.exercises}))
-      .catch(console.error)
+      .catch((res) => {
+        this.setState({error: true})
+      })
       .always(() => { this.setState({isLoading: false}) })
   }
 
@@ -49,6 +53,8 @@ class ExerciseListContainer extends Component {
       case 'difficulty':
         exercises.sort(Score.sortDifficulty)
         break
+      default:
+        exercises.sort(Score.sortMostPopular)
     }
     return exercises
   }
@@ -65,6 +71,7 @@ class ExerciseListContainer extends Component {
         break
       case 'delete': this.onDelete(id)
         break
+      default:
     }
   }
   onSortChange = (e, child) => {
@@ -91,17 +98,16 @@ class ExerciseListContainer extends Component {
   onAdd = () => this.props.history.push('/exercises/new')
 
   onDelete = (id) => {
+    this.setState({isLoading: true, error: false})
     destroy(id)
       .then(() => {
         let exercisesCopy = this.state.exercises.slice()
         const i = exercisesCopy.findIndex(e => e.id === id)
         exercisesCopy.splice(i, 1)
-        this.setState({
-          exercises: exercisesCopy
-        })
+        this.setState({exercises: exercisesCopy})
       })
-      // TODO handle this error
-      .catch(console.error)
+      .catch(() => this.setState({error: true}))
+      .always(() => this.setState({isLoading: false}))
   }
 
   insetChild = (item) => {
@@ -142,6 +148,7 @@ class ExerciseListContainer extends Component {
           {exercises}
           </div>
           {isLoading && <AppLoader /> }
+          <AppError open={this.state.error} message='Sorry, something went wrong'/>
     </div>
     )
   }

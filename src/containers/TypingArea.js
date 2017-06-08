@@ -219,7 +219,7 @@ class TypingArea extends Component {
   }
   render () {
     const { mistakes } = this.state.score
-    const { error, focused, complete, correctlyTypedCharacters: total } = this.state
+    const { error, focused, complete, target: total } = this.state
     const style = {
       display: 'inline-block',
       marginTop: '10px',
@@ -231,7 +231,6 @@ class TypingArea extends Component {
     )
     const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
     const showScorecard = this.props.scorecard
-
     return (
       <div>
         <CSSTransitionGroup

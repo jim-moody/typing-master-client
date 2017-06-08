@@ -1,17 +1,17 @@
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import Character from './Character'
 import Paper from 'material-ui/Paper'
 import { create } from '../utils/score-api'
+import { show } from '../utils/exercise-api'
 import classNames from 'classnames'
 import { CSSTransitionGroup } from 'react-transition-group' // ES6
 import Scorecard from '../components/Scorecard'
 import Score from '../modules/Score'
 import TypingAssistant from './TypingAssistant'
 import Popover from 'material-ui/Popover'
-import RaisedButton from 'material-ui/RaisedButton'
 import '../styles/TypingArea.css'
+// import '../styles/Transitions.css'
 import Timer from '../modules/Timer'
 
 class TypingArea extends Component {
@@ -21,32 +21,39 @@ class TypingArea extends Component {
     this.state = this.getInitialState()
   }
   getInitialState = () => {
-    const characters = this.formatCharacters(this.props.text)
     return {
       score: {
         mistakes: 0,
         time: 0
       },
       focused: false,
-      characters,
+      characters: [],
       target: 0,
       intervalId: 0,
       complete: false,
       correctlyTypedCharacters: 0
     }
   }
+  componentDidMount () {
+    this.getExercise()
+  }
+
+  getExercise () {
+    show(this.props.exerciseId)
+      .then(res => {
+        this.setState({
+          characters: this.formatCharacters(res.exercise.text),
+          name: res.exercise.name
+        })
+      })
+      .catch(console.error)
+  }
 
   // if the user leaves halfway through a lesson, make sure to turn the timer off
   componentWillUnmount () {
     this.stopTimer(this.state.intervalId)
   }
-  componentWillReceiveProps (props) {
-    const characters = this.formatCharacters(props.text)
-    this.setState({
-      characters
-    })
-  }
-  // turn the text blob into an array of character objects
+
   formatCharacters = text =>
     text.trim().split('').map(char => {
       return {
@@ -188,8 +195,8 @@ class TypingArea extends Component {
   }
   characters = () => {
     return this.state.characters.map((char, i) =>
-      <Character highlight={char.highlight} key={i} cursor={char.cursor} character={char.character} />
-    )
+        <Character highlight={char.highlight} key={i} cursor={char.cursor} character={char.character} />
+      )
   }
 
   onSubmitScore = () => {
@@ -198,6 +205,7 @@ class TypingArea extends Component {
     score.time = Timer.getTime()
     create(exerciseId, score)
       .then(() => this.setState(this.getInitialState()))
+      .then(() => this.getExercise())
       // TODO handle this error
       .catch(console.error)
   }
@@ -206,7 +214,8 @@ class TypingArea extends Component {
     const { focused, complete, correctlyTypedCharacters: total } = this.state
     const style = {
       display: 'inline-block',
-      marginTop: '10px'
+      marginTop: '10px',
+      width: '100%'
     }
     const helpClass = classNames(
       {hidden: focused},
@@ -214,10 +223,11 @@ class TypingArea extends Component {
     )
     const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
     const showScorecard = complete || this.props.scorecard
+
     return (
       <div>
         <CSSTransitionGroup
-          transitionName="example"
+          transitionName="fade"
           transitionEnterTimeout={500}
           transitionLeaveTimeout={300}>
           { showScorecard &&

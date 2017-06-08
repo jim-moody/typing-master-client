@@ -3,7 +3,8 @@ import React, { Component } from 'react'
 import {
   BrowserRouter as Router,
   Route,
-  Switch
+  Switch,
+  Redirect
 } from 'react-router-dom'
 // Material UI
 import injectTapEventPlugin from 'react-tap-event-plugin'
@@ -19,7 +20,6 @@ import PrivateRoute from './components/PrivateRoute'
 import Auth from './modules/Auth'
 // Components/Containers
 import NavBarContainer from './containers/NavBarContainer'
-import Main from './components/Main'
 import SignInContainer from './containers/SignInContainer'
 import SignUpContainer from './containers/SignUpContainer'
 import ChangePasswordContainer from './containers/ChangePasswordContainer'
@@ -46,43 +46,31 @@ class App extends Component {
       snackbar: {
         open: false,
         message: ''
-      },
-      isLoading: false
+      }
     }
-  }
-  onUpdateLoader = status => {
-    this.setState({
-      isLoading: status
-    })
   }
   // pass this down to the sign out link
   onSignOutSuccess = (e) => {
     Auth.deauthenticateUser()
     this.triggerAlert('You are now signed out')
     this.setState({
-      loggedIn: Auth.isUserAuthenticated(),
-      isLoading: false
+      loggedIn: Auth.isUserAuthenticated()
     })
   }
   onSignedIn = (token, userId) => {
     Auth.authenticateUser(token, userId)
     this.triggerAlert('You are now signed in')
     this.setState({
-      loggedIn: Auth.isUserAuthenticated(),
-      isLoading: false
+      loggedIn: Auth.isUserAuthenticated()
     })
   }
   onPasswordChanged = () => {
     this.triggerAlert('Password changed successfully')
-    this.setState({
-      isLoading: false
-    })
   }
   onSignOutFailure = () => {
     Auth.deauthenticateUser()
     this.setState({
-      loggedIn: Auth.isUserAuthenticated(),
-      isLoading: false
+      loggedIn: Auth.isUserAuthenticated()
     })
     this.props.history.push('/sign-in')
     this.triggerAlert('Sorry, there was an issue signing you out. Try signing back in and then out.')
@@ -123,14 +111,16 @@ class App extends Component {
               autoHideDuration={4000}
               onRequestClose={this.onHandleRequestClose}
               message={this.state.snackbar.message}/>
-            <PrivateRoute exact path="/" component={ExerciseListContainer} />
+            <Route exact path="/" render={() => <Redirect to="/exercises" /> }/>
           <Switch>
             <PrivateRoute exact path="/exercises" component={ExerciseListContainer} />
             <PrivateRoute path="/exercises/new" component={NewExercise} />
               <PrivateRoute path="/exercises/edit/:id" component={EditExerciseContainer} />
             <PrivateRoute path="/exercises/:id" component={ExerciseContainer} />
             </Switch>
-          <PrivateRoute path="/change-password" component={ChangePasswordContainer} onPasswordChanged={this.onPasswordChanged} />
+          <PrivateRoute path="/change-password"
+            component={ChangePasswordContainer}
+            onPasswordChanged={this.onPasswordChanged} />
           <Route path="/sign-in" render={props => <SignInContainer onSignedIn={this.onSignedIn} {...props} /> }/>
           <Route path="/sign-up" render={props => <SignUpContainer onSignedIn={this.onSignedIn} {...props} /> } />
           </div>

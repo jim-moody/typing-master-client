@@ -2,6 +2,7 @@
 let t = 0
 class Timer {
   static startTimer = () => {
+    t = 0
     const intervalId = setInterval(() => {
       t = parseFloat(t) + 0.1
       t = t.toFixed(1)

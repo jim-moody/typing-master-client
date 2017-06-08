@@ -13,22 +13,29 @@ import Score from '../modules/Score'
 import { show } from '../utils/exercise-api'
 import FlatButton from 'material-ui/FlatButton'
 import {teal500} from 'material-ui/styles/colors'
+import AppLoader from '../components/AppLoader'
+import AppError from '../components/AppError'
+import '../styles/TopScores.css'
 
 class TopScores extends Component {
   constructor (props) {
     super(props)
     this.state = {
       scores: [],
-      expanded: false
+      expanded: false,
+      isLoading: false,
+      error: false
     }
   }
   componentDidMount () {
     this.getScores()
   }
   getScores = () => {
+    this.setState({isLoading: true})
     show(this.props.exerciseId)
       .then(res => this.setState({scores: res.exercise.scores}))
-      .catch(console.error)
+      .catch(() => this.setState({error: true}))
+      .always(() => this.setState({isLoading: false}))
   }
   topScores () {
     let { scores } = this.state
@@ -76,13 +83,11 @@ class TopScores extends Component {
     return this.state.scores.length >= number
   }
   render () {
-    // this.getScores()
-    console.log('refreshed')
     const buttonLabel = this.state.expanded ? 'Show Less' : 'Show More'
 
     const colWidth = ['15%', '35%', '20%', '15%', '15%']
     const fontSize = '1em'
-
+    const { error, isLoading } = this.state
     const rows = this.topScores().map((score, i) => {
       const date = moment(score.createdAt).format('M/D/YYYY')
       const accuracy = Score.accuracy(score.exerciseLength, score.mistakes)
@@ -101,7 +106,7 @@ class TopScores extends Component {
       )
     })
     return (
-  <div>
+  <div className='TopScores'>
     <div>
     { this.lengthAtLeast(1)
       ? <div>
@@ -125,6 +130,8 @@ class TopScores extends Component {
       </div>
       : <p> No scores yet</p>
       }
+      {isLoading && <AppLoader /> }
+      <AppError open={error} message='Sorry, something went wrong'/>
     </div>
   </div>
 

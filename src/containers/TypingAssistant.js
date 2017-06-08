@@ -8,7 +8,6 @@ class TypingAssistant extends Component {
     const character = this.props.character.character || ''
     let finger = FingerMap.getFinger(character.toUpperCase())
     const iter = [5, 6, 7, 8, 9]
-    // console.log(character)
 
     const leftFingers = iter.map((e, i) => {
       let classes = 'finger'

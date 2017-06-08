@@ -47,7 +47,7 @@ class TypingAssistant extends Component {
         <div className="body">
           <div className='arm'></div>
           <div className="head">
-            FingerMaster
+            FingerGuide
           </div>
           <div className='arm'></div>
         </div>

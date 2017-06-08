@@ -10,23 +10,39 @@ import {
   TableRowColumn
 } from 'material-ui/Table'
 import Score from '../modules/Score'
+import { show } from '../utils/exercise-api'
 import FlatButton from 'material-ui/FlatButton'
-import {teal500} from 'material-ui/styles/colors';
+import {teal500} from 'material-ui/styles/colors'
 
 class TopScores extends Component {
   constructor (props) {
     super(props)
     this.state = {
+      scores: [],
       expanded: false
     }
   }
+  componentDidMount () {
+    this.getScores()
+  }
+  getScores = () => {
+    show(this.props.exerciseId)
+      .then(res => this.setState({scores: res.exercise.scores}))
+      .catch(console.error)
+  }
   topScores () {
-    let { scores } = this.props
+    let { scores } = this.state
     scores.sort(this.sorter)
     if (!this.state.expanded) {
       return scores.filter((e, i) => i < 5)
     }
     return scores
+  }
+
+  componentWillReceiveProps () {
+    if (this.props.refreshScores) {
+      this.getScores()
+    }
   }
   sorter (a, b) {
     const accuracyA = Score.accuracy(a.exerciseLength, a.mistakes)
@@ -57,9 +73,11 @@ class TopScores extends Component {
     this.setState({expanded: !this.state.expanded})
   }
   lengthAtLeast (number) {
-    return this.props.scores.length >= number
+    return this.state.scores.length >= number
   }
   render () {
+    // this.getScores()
+    console.log('refreshed')
     const buttonLabel = this.state.expanded ? 'Show Less' : 'Show More'
 
     const colWidth = ['15%', '35%', '20%', '15%', '15%']

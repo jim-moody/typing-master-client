@@ -5,7 +5,9 @@ import TypingArea from './TypingArea'
 import Paper from 'material-ui/Paper'
 import TopScores from '../components/TopScores'
 import {Tabs, Tab} from 'material-ui/Tabs'
-import Toggle from 'material-ui/Toggle';
+import Toggle from 'material-ui/Toggle'
+import AppLoader from '../components/AppLoader'
+import AppError from '../components/AppError'
 import {teal700} from 'material-ui/styles/colors'
 import '../styles/Exercise.css'
 
@@ -20,28 +22,34 @@ class ExerciseContainer extends Component {
       exercise: {
         name: ''
       },
+      isLoading: false,
+      error: false,
       refreshScores: false
     }
   }
-  onActive = (e) => {
-    this.selectTab(e.props.value)
-    if (e.props.value === 2) {
-      this.setState({refreshScores: true})
-    }
+  onHandleComplete = () => {
+    this.setState({
+      refreshScores: true,
+      scoreToggled: true
+    })
+  }
+  onHandleScoreSubmitted = () => {
+    this.selectTab(2)
   }
 
-
   componentDidMount () {
+    this.setState({isLoading: true})
     show(this.props.match.params.id)
       .then(res => {
         this.setState({
           exercise: res.exercise
         })
       })
-      .catch(console.error)
+      .catch(() => this.setState({error: true}))
+      .always(() => this.setState({isLoading: false}))
   }
   selectTab = (value) => {
-    this.setState({value})
+    this.setState({tabValue: value})
   }
   onAssistantToggle = () => {
     this.setState({assistantToggled: !this.state.assistantToggled})
@@ -50,9 +58,10 @@ class ExerciseContainer extends Component {
     this.setState({scoreToggled: !this.state.scoreToggled})
   }
   render () {
+    const {isLoading, error} = this.state
     return (
       <div className="Exercise">
-      <Tabs value={this.state.value} tabItemContainerStyle={{backgroundColor: teal700}}>
+      <Tabs onChange={this.selectTab} value={this.state.tabValue} tabItemContainerStyle={{backgroundColor: teal700}}>
         <Tab onActive={this.onActive} value={1} label='Exercise'>
         <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
           <div className='header'>
@@ -76,7 +85,9 @@ class ExerciseContainer extends Component {
           onSubmitScore={this.selectTab}
           exerciseId={this.props.match.params.id}
           assistant={this.state.assistantToggled}
-          scorecard={this.state.scoreToggled} />
+          scorecard={this.state.scoreToggled}
+          onScoreSubmitted={this.onHandleScoreSubmitted}
+          onComplete={this.onHandleComplete} />
         </div>
           </Tab>
           <Tab onActive={this.onActive} value={2} label='Leaderboard'>
@@ -89,6 +100,8 @@ class ExerciseContainer extends Component {
         </Paper>
         </Tab>
       </Tabs>
+      <AppError open={error} message='Sorry, something went wrong' />
+      {isLoading && <AppLoader /> }
     </div>
     )
   }

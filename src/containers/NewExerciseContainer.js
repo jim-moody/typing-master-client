@@ -3,6 +3,7 @@ import React, {Component} from 'react'
 import {createExercise} from '../utils/exercise-api'
 import UpdateExercise from '../components/UpdateExercise'
 import Validator from '../modules/Validator'
+import ErrorParser from '../modules/ErrorParser'
 
 class EditExerciseContainer extends Component {
   constructor (props) {
@@ -13,6 +14,7 @@ class EditExerciseContainer extends Component {
         name: '',
         text: ''
       },
+      isLoading: false,
       errors: {}
     }
   }
@@ -34,14 +36,23 @@ class EditExerciseContainer extends Component {
     e.preventDefault()
     let validator = new Validator(this.state.exercise, this.state.errors)
     let errors = validator.formErrors
+    errors.description = ''
     this.setState({ errors })
 
     if (validator.errorExists) {
       return
     }
+    this.setState({isLoading: true})
     createExercise(this.state.exercise)
       .then(() => this.props.history.push('/exercises'))
-      .catch(console.error)
+      .catch(res => {
+        this.setState({
+          errors: {
+            description: ErrorParser.customError(res),
+            isLoading: false
+          }
+        })
+      })
   }
   render () {
     return (

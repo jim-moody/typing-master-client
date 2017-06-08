@@ -10,6 +10,13 @@ const ErrorParser = {
       }
     }
     return errorMessage
+  },
+  customError (response) {
+    let errorMessage = 'Sorry something went wrong, please try again'
+    if (response.responseJSON && response.responseJSON.type === 'duplicate') {
+      errorMessage = 'Please enter a new name, this name is already taken'
+    }
+    return errorMessage
   }
 }
 

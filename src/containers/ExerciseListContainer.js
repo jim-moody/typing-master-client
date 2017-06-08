@@ -10,6 +10,7 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import IconButton from 'material-ui/IconButton'
 import Score from '../modules/Score'
+import AppLoader from '../components/AppLoader'
 
 class ExerciseListContainer extends Component {
   constructor () {
@@ -17,42 +18,36 @@ class ExerciseListContainer extends Component {
     this.state = {
       exercises: [],
       selectedIndex: 0,
-      sort: 'popular'
+      sort: {
+        value: 'popular',
+        ascending: true
+      },
+      isLoading: false
     }
   }
 
   componentDidMount () {
+    this.setState({isLoading: true})
     index()
       .then(res => this.setState({exercises: res.exercises}))
-      // TODO handle this error
       .catch(console.error)
+      .always(() => { this.setState({isLoading: false}) })
   }
-  sortLength = (a, b) => {
-    return a.text.length > b.length.text
-  }
-  sortDifficulty = (a, b) => {
-    return Score.difficulty(a.scores) > Score.difficulty(b.scores)
-  }
-  sortNewest = (a, b) => {
-    return a.createdAt > b.createdAt
-  }
-  sortMostPopular = (a, b) => {
-    return a.scores.length > b.scores.length
-  }
-  sort = (type) => {
+
+  sort = (value) => {
     const exercises = this.state.exercises
-    switch (type) {
+    switch (value) {
       case 'popular':
-        exercises.sort(this.sortMostPopular)
+        exercises.sort(Score.sortMostPopular)
         break
       case 'length':
-        exercises.sort(this.sortNewest)
+        exercises.sort(Score.sortNewest)
         break
       case 'newest':
-        exercises.sort(this.sortNewest)
+        exercises.sort(Score.sortNewest)
         break
       case 'difficulty':
-        exercises.sort(this.sortDifficulty)
+        exercises.sort(Score.sortDifficulty)
         break
     }
     return exercises
@@ -72,14 +67,24 @@ class ExerciseListContainer extends Component {
         break
     }
   }
-  onSortChange = (e, sortValue) => {
-    let exercises = this.sort(sortValue)
-    if (sortValue === this.state.sort) {
-      exercises.reverse()
+  onSortChange = (e, child) => {
+    const { value } = child.props
+    let exercises = this.sort(value)
+    let { ascending, value: currentValue } = this.state.sort
+    // if the sort option was already selected, change the list to descending
+    // and update the value
+    if (value === currentValue) {
+      ascending = !ascending
+    } else {
+      ascending = true
     }
+    ascending && exercises.reverse()
     this.setState({
       exercises,
-      sort: sortValue
+      sort: {
+        value,
+        ascending
+      }
     })
   }
 
@@ -99,7 +104,11 @@ class ExerciseListContainer extends Component {
       .catch(console.error)
   }
 
+  insetChild = (item) => {
+    return item !== this.state.sort.type
+  }
   render () {
+    const { isLoading } = this.state
     const exercises = this.state.exercises.map((exercise, i) => {
       return (
         <ExerciseItem key={i}
@@ -114,19 +123,17 @@ class ExerciseListContainer extends Component {
           text={exercise.text} />
       )
     })
-
     return (
       <div>
         <div>
           <div className='list-header'>
             <RaisedButton className='add-action' onClick={this.onAdd} primary label="Add Exercise"/>
             <h2>Exercises</h2>
-            Sort
             <IconMenu
-
-              iconButtonElement={<IconButton><Sort /></IconButton>}
-              onChange={this.onSortChange}>
-              <MenuItem value="length" primaryText="Length" />
+              value={this.state.sort.value}
+              iconButtonElement={<IconButton><Sort hoverColor='gray'/></IconButton>}
+              onItemTouchTap={this.onSortChange}>
+              <MenuItem value="length" primaryText="Length"/>
               <MenuItem value="difficulty" primaryText="Difficulty" />
               <MenuItem value="new" primaryText="Newest" />
               <MenuItem value="popular" primaryText="Most Popular" />
@@ -134,6 +141,7 @@ class ExerciseListContainer extends Component {
           </div>
           {exercises}
           </div>
+          {isLoading && <AppLoader /> }
     </div>
     )
   }

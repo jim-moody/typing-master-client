@@ -9,7 +9,6 @@ import Character from './Character'
 import classNames from 'classnames'
 import Scorecard from '../components/Scorecard'
 import TypingAssistant from './TypingAssistant'
-import AppLoader from '../components/AppLoader'
 import AppError from '../components/AppError'
 // Modules/Utils
 import Score from '../modules/Score'
@@ -38,7 +37,6 @@ class TypingArea extends Component {
       intervalId: 0,
       complete: false,
       correctlyTypedCharacters: 0,
-      isLoading: false,
       error: false
     }
   }
@@ -47,7 +45,6 @@ class TypingArea extends Component {
   }
 
   getExercise () {
-    // this.setState({isLoading: true})
     show(this.props.exerciseId)
       .then(res => {
         this.setState({
@@ -56,7 +53,6 @@ class TypingArea extends Component {
         })
       })
       .catch(() => this.setState({error: true}))
-      .always(() => this.setState({isLoading: false}))
   }
 
   // if the user leaves halfway through a lesson, make sure to turn the timer off
@@ -223,7 +219,7 @@ class TypingArea extends Component {
   }
   render () {
     const { mistakes } = this.state.score
-    const { isLoading, error, focused, complete, correctlyTypedCharacters: total } = this.state
+    const { error, focused, complete, correctlyTypedCharacters: total } = this.state
     const style = {
       display: 'inline-block',
       marginTop: '10px',
@@ -270,7 +266,6 @@ class TypingArea extends Component {
       </Paper>
       <Popover />
       { this.props.assistant && <TypingAssistant character={char} /> }
-      {isLoading && <AppLoader /> }
       <AppError open={error} message='Sorry, something went wrong'/>
       </div>
     )

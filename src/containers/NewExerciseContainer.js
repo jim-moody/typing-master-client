@@ -14,7 +14,6 @@ class EditExerciseContainer extends Component {
         name: '',
         text: ''
       },
-      isLoading: false,
       errors: {}
     }
   }
@@ -42,14 +41,12 @@ class EditExerciseContainer extends Component {
     if (validator.errorExists) {
       return
     }
-    this.setState({isLoading: true})
     createExercise(this.state.exercise)
       .then(() => this.props.history.push('/exercises'))
       .catch(res => {
         this.setState({
           errors: {
-            description: ErrorParser.customError(res),
-            isLoading: false
+            description: ErrorParser.customError(res)
           }
         })
       })

@@ -10,7 +10,6 @@ import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import IconButton from 'material-ui/IconButton'
 import Score from '../modules/Score'
-import AppLoader from '../components/AppLoader'
 import AppError from '../components/AppError'
 
 class ExerciseListContainer extends Component {
@@ -23,19 +22,16 @@ class ExerciseListContainer extends Component {
         value: 'popular',
         ascending: true
       },
-      isLoading: false,
       error: false
     }
   }
 
   componentDidMount () {
-    this.setState({isLoading: true})
     index()
       .then(res => this.setState({exercises: res.exercises}))
       .catch((res) => {
         this.setState({error: true})
       })
-      .always(() => { this.setState({isLoading: false}) })
   }
 
   sort = (value) => {
@@ -98,7 +94,7 @@ class ExerciseListContainer extends Component {
   onAdd = () => this.props.history.push('/exercises/new')
 
   onDelete = (id) => {
-    this.setState({isLoading: true, error: false})
+    this.setState({error: false})
     destroy(id)
       .then(() => {
         let exercisesCopy = this.state.exercises.slice()
@@ -107,14 +103,12 @@ class ExerciseListContainer extends Component {
         this.setState({exercises: exercisesCopy})
       })
       .catch(() => this.setState({error: true}))
-      .always(() => this.setState({isLoading: false}))
   }
 
   insetChild = (item) => {
     return item !== this.state.sort.type
   }
   render () {
-    const { isLoading } = this.state
     const exercises = this.state.exercises.map((exercise, i) => {
       return (
         <ExerciseItem key={i}
@@ -147,7 +141,6 @@ class ExerciseListContainer extends Component {
           </div>
           {exercises}
           </div>
-          {isLoading && <AppLoader /> }
           <AppError open={this.state.error} message='Sorry, something went wrong'/>
     </div>
     )

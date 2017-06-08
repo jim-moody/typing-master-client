@@ -4,7 +4,6 @@ import {show, update} from '../utils/exercise-api'
 import UpdateExercise from '../components/UpdateExercise'
 import Validator from '../modules/Validator'
 import ErrorParser from '../modules/ErrorParser'
-import AppLoader from '../components/AppLoader'
 import AppError from '../components/AppError'
 
 class EditExerciseContainer extends Component {
@@ -15,13 +14,11 @@ class EditExerciseContainer extends Component {
         name: '',
         text: ''
       },
-      isLoading: false,
       error: false,
       errors: {}
     }
   }
   componentDidMount () {
-    this.setState({isLoading: true})
     show(this.props.match.params.id)
       .then(res => {
         const {name, text} = res.exercise
@@ -32,7 +29,6 @@ class EditExerciseContainer extends Component {
         this.setState({exercise})
       })
       .catch(() => this.setState({error: true}))
-      .always(() => this.setState({isLoading: false}))
   }
   onChangeExercise = (event) => {
     const field = event.target.name
@@ -57,20 +53,18 @@ class EditExerciseContainer extends Component {
       return
     }
     const { id } = this.props.match.params
-    this.setState({isLoading: true})
     update(id, this.state.exercise)
       .then(() => this.props.history.replace('/exercises'))
       .catch(res => {
         this.setState({
           errors: {
             description: ErrorParser.customError(res)
-          },
-          isLoading: false
+          }
         })
       })
   }
   render () {
-    const {isLoading, error} = this.state
+    const {error} = this.state
     return (
       <div>
         <UpdateExercise
@@ -80,7 +74,6 @@ class EditExerciseContainer extends Component {
             errors={this.state.errors}
             title='Edit Exercise'
             />
-          { isLoading && <AppLoader /> }
           <AppError open={error} message='Sorry, something went wrong' />
       </div>
     )

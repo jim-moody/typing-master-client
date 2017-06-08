@@ -6,7 +6,6 @@ import Paper from 'material-ui/Paper'
 import TopScores from '../components/TopScores'
 import {Tabs, Tab} from 'material-ui/Tabs'
 import Toggle from 'material-ui/Toggle'
-import AppLoader from '../components/AppLoader'
 import AppError from '../components/AppError'
 import {teal700} from 'material-ui/styles/colors'
 import '../styles/Exercise.css'
@@ -22,7 +21,6 @@ class ExerciseContainer extends Component {
       exercise: {
         name: ''
       },
-      isLoading: false,
       error: false,
       refreshScores: false
     }
@@ -38,7 +36,6 @@ class ExerciseContainer extends Component {
   }
 
   componentDidMount () {
-    this.setState({isLoading: true})
     show(this.props.match.params.id)
       .then(res => {
         this.setState({
@@ -46,7 +43,6 @@ class ExerciseContainer extends Component {
         })
       })
       .catch(() => this.setState({error: true}))
-      .always(() => this.setState({isLoading: false}))
   }
   selectTab = (value) => {
     this.setState({tabValue: value})
@@ -58,7 +54,7 @@ class ExerciseContainer extends Component {
     this.setState({scoreToggled: !this.state.scoreToggled})
   }
   render () {
-    const {isLoading, error} = this.state
+    const {error} = this.state
     return (
       <div className="Exercise">
       <Tabs onChange={this.selectTab} value={this.state.tabValue} tabItemContainerStyle={{backgroundColor: teal700}}>
@@ -101,7 +97,6 @@ class ExerciseContainer extends Component {
         </Tab>
       </Tabs>
       <AppError open={error} message='Sorry, something went wrong' />
-      {isLoading && <AppLoader /> }
     </div>
     )
   }

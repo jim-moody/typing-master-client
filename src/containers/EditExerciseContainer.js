@@ -3,7 +3,6 @@ import React, {Component} from 'react'
 import {show, update} from '../utils/exercise-api'
 import UpdateExercise from '../components/UpdateExercise'
 import Validator from '../modules/Validator'
-import '../styles/NewExercise.css'
 
 class EditExerciseContainer extends Component {
   constructor () {

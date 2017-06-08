@@ -53,7 +53,11 @@ class EditExerciseContainer extends Component {
       return
     }
     const { id } = this.props.match.params
-    update(id, this.state.exercise)
+    // trim the text before saving so that all calculations happen correctly since we trim
+    // before displaying the exercise to the user
+    const exercise = this.state.exercise
+    exercise.text = exercise.text.trim()
+    update(id, exercise)
       .then(() => this.props.history.replace('/exercises'))
       .catch(res => {
         this.setState({

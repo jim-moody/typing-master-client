@@ -41,7 +41,11 @@ class EditExerciseContainer extends Component {
     if (validator.errorExists) {
       return
     }
-    createExercise(this.state.exercise)
+    const exercise = this.state.exercise
+    // trim the text before saving so that all calculations happen correctly since we trim
+    // before displaying the exercise to the user
+    exercise.text = exercise.text.trim()
+    createExercise(exercise)
       .then(() => this.props.history.push('/exercises'))
       .catch(res => {
         this.setState({

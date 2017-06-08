@@ -13,31 +13,32 @@ class ExerciseContainer extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      exercise: {
-        text: '',
-        name: '',
-        id: '',
-        scores: []
-      },
+      scores: [],
       assistantToggled: false,
       scoreToggled: false,
-      tabValue: 1
+      tabValue: 1,
+      exercise: {
+        name: ''
+      },
+      refreshScores: false
     }
   }
   onActive = (e) => {
     this.selectTab(e.props.value)
     if (e.props.value === 2) {
-      this.refreshScores()
+      this.setState({refreshScores: true})
     }
   }
 
-  refreshScores () {
-    show(this.props.match.params.id)
-      .then(res => this.setState({exercise: res.exercise}))
-      .catch(console.error)
-  }
+
   componentDidMount () {
-    this.refreshScores()
+    show(this.props.match.params.id)
+      .then(res => {
+        this.setState({
+          exercise: res.exercise
+        })
+      })
+      .catch(console.error)
   }
   selectTab = (value) => {
     this.setState({value})
@@ -49,8 +50,6 @@ class ExerciseContainer extends Component {
     this.setState({scoreToggled: !this.state.scoreToggled})
   }
   render () {
-    const props = this.props
-    const { exercise } = this.state
     return (
       <div className="Exercise">
       <Tabs value={this.state.value} tabItemContainerStyle={{backgroundColor: teal700}}>
@@ -58,7 +57,7 @@ class ExerciseContainer extends Component {
         <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
           <div className='header'>
             <div className='title'>
-              <h2 style={{textAlign: 'center'}}>{exercise.name}</h2>
+              <h2 style={{textAlign: 'center'}}>{this.state.exercise.name}</h2>
             </div>
             <div className='toggle'>
           <Toggle
@@ -75,9 +74,7 @@ class ExerciseContainer extends Component {
           </div>
         <TypingArea
           onSubmitScore={this.selectTab}
-          name={exercise.name}
-          text={exercise.text}
-          exerciseId={exercise.id} {...props}
+          exerciseId={this.props.match.params.id}
           assistant={this.state.assistantToggled}
           scorecard={this.state.scoreToggled} />
         </div>
@@ -85,7 +82,10 @@ class ExerciseContainer extends Component {
           <Tab onActive={this.onActive} value={2} label='Leaderboard'>
           <h2 style={{textAlign: 'center'}}>Leaderboard</h2>
         <Paper style={{maxWidth: '700px', margin: '20px auto', overflow: 'hidden'}}>
-        <TopScores scores={exercise.scores}/>
+        <TopScores
+          refreshScores={this.state.refreshScores}
+          exerciseId={this.props.match.params.id}
+          />
         </Paper>
         </Tab>
       </Tabs>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 
 class Character extends Component {
-
   render () {
     const classes = classNames(
       {cursor: this.props.cursor},

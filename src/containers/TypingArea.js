@@ -1,18 +1,24 @@
 /* eslint react/prop-types: 0 */
 import React, { Component } from 'react'
-import Character from './Character'
-import Paper from 'material-ui/Paper'
-import { create } from '../utils/score-api'
-import { show } from '../utils/exercise-api'
-import classNames from 'classnames'
 import { CSSTransitionGroup } from 'react-transition-group' // ES6
-import Scorecard from '../components/Scorecard'
-import Score from '../modules/Score'
-import TypingAssistant from './TypingAssistant'
+// Material UI
 import Popover from 'material-ui/Popover'
-import '../styles/TypingArea.css'
-// import '../styles/Transitions.css'
+import Paper from 'material-ui/Paper'
+// Containers/Components
+import Character from './Character'
+import classNames from 'classnames'
+import Scorecard from '../components/Scorecard'
+import TypingAssistant from './TypingAssistant'
+import AppLoader from '../components/AppLoader'
+import AppError from '../components/AppError'
+// Modules/Utils
+import Score from '../modules/Score'
 import Timer from '../modules/Timer'
+import { show } from '../utils/exercise-api'
+import { create } from '../utils/score-api'
+// Styles
+import '../styles/TypingArea.css'
+import '../styles/Transitions.css'
 
 class TypingArea extends Component {
   constructor (props) {

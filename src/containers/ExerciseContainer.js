@@ -58,7 +58,7 @@ class ExerciseContainer extends Component {
     return (
       <div className="Exercise">
       <Tabs onChange={this.selectTab} value={this.state.tabValue} tabItemContainerStyle={{backgroundColor: teal700}}>
-        <Tab onActive={this.onActive} value={1} label='Exercise'>
+        <Tab onActive={this.onActive} value={1} label='Typing Exercise'>
         <div className='TypingArea' style={{display: 'flex', flexDirection: 'column', maxWidth: '700px', margin: '0 auto'}}>
           <div className='header'>
             <div className='title'>

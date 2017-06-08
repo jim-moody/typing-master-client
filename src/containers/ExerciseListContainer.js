@@ -135,7 +135,6 @@ class ExerciseListContainer extends Component {
               onItemTouchTap={this.onSortChange}>
               <MenuItem value="length" primaryText="Length"/>
               <MenuItem value="difficulty" primaryText="Difficulty" />
-              <MenuItem value="new" primaryText="Newest" />
               <MenuItem value="popular" primaryText="Most Popular" />
             </IconMenu>
           </div>

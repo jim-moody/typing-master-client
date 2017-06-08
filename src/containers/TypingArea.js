@@ -37,7 +37,9 @@ class TypingArea extends Component {
       target: 0,
       intervalId: 0,
       complete: false,
-      correctlyTypedCharacters: 0
+      correctlyTypedCharacters: 0,
+      isLoading: false,
+      error: false
     }
   }
   componentDidMount () {
@@ -45,6 +47,7 @@ class TypingArea extends Component {
   }
 
   getExercise () {
+    // this.setState({isLoading: true})
     show(this.props.exerciseId)
       .then(res => {
         this.setState({
@@ -52,7 +55,8 @@ class TypingArea extends Component {
           name: res.exercise.name
         })
       })
-      .catch(console.error)
+      .catch(() => this.setState({error: true}))
+      .always(() => this.setState({isLoading: false}))
   }
 
   // if the user leaves halfway through a lesson, make sure to turn the timer off
@@ -125,6 +129,7 @@ class TypingArea extends Component {
       })
     }
   }
+
   onCharacterEntered = (e) => {
     // prevent spacebar from scrolling down the page
     e.preventDefault()
@@ -136,10 +141,10 @@ class TypingArea extends Component {
 
       const characterEntered = this.getCharacterEntered(e.which)
       const isCorrect = this.validate(characterEntered)
-
+      const { onComplete } = this.props
       //  if the value is correct, start updating the state
       if (isCorrect) {
-        return this.setState(prevState => {
+        this.setState(prevState => {
           let characters = prevState.characters
           let target = prevState.target
           let complete = prevState.complete
@@ -159,6 +164,7 @@ class TypingArea extends Component {
           // use is complete if the target is = to the length of the text blob
           if (characters.length === target) {
             complete = true
+            onComplete()
             Timer.stopTimer(this.state.intervalId)
           }
           // if the user autotabbed, update all the characters up until the current
@@ -212,12 +218,12 @@ class TypingArea extends Component {
     create(exerciseId, score)
       .then(() => this.setState(this.getInitialState()))
       .then(() => this.getExercise())
-      // TODO handle this error
-      .catch(console.error)
+      .then(() => this.props.onScoreSubmitted())
+      .catch(() => this.setState({error: true}))
   }
   render () {
     const { mistakes } = this.state.score
-    const { focused, complete, correctlyTypedCharacters: total } = this.state
+    const { isLoading, error, focused, complete, correctlyTypedCharacters: total } = this.state
     const style = {
       display: 'inline-block',
       marginTop: '10px',
@@ -228,7 +234,7 @@ class TypingArea extends Component {
       {'div-overlay': true}
     )
     const char = this.state.focused ? this.state.characters[this.state.target] || '' : ''
-    const showScorecard = complete || this.props.scorecard
+    const showScorecard = this.props.scorecard
 
     return (
       <div>
@@ -264,6 +270,8 @@ class TypingArea extends Component {
       </Paper>
       <Popover />
       { this.props.assistant && <TypingAssistant character={char} /> }
+      {isLoading && <AppLoader /> }
+      <AppError open={error} message='Sorry, something went wrong'/>
       </div>
     )
   }

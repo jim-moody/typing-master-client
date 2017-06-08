@@ -41,6 +41,19 @@ class Score {
     }
     return difficulty
   }
+
+  static sortLength (a, b) {
+    return a.text.length > b.length.text
+  }
+  static sortDifficulty (a, b) {
+    return Score.difficulty(a.scores) > Score.difficulty(b.scores)
+  }
+  static sortNewest (a, b) {
+    return a.createdAt > b.createdAt
+  }
+  static sortMostPopular (a, b) {
+    return a.scores.length > b.scores.length
+  }
 }
 
 export default Score
